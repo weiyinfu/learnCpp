@@ -1,0 +1,11 @@
+.idea/
+*.iml
+*.out
+cmake-build-debug/
+target/
+__pycache__
+.DS_Store
+.vscode/
+.pynb_checkpoints
+__pycache__/
+node_modules/
