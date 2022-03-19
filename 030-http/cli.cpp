@@ -13,8 +13,8 @@ int main() {
 
 // HTTPS
 //    httplib::Client cli("https://cpp-httplib-server.yhirose.repl.co");
-
     auto res = cli.Get("/hi");
+
     cout << res->status;
     cout << res->body;
     return 0;
