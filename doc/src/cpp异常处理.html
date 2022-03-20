@@ -1,0 +1,1402 @@
+<html>
+<head>
+
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="article-inner markdown-body">
+
+    <p>From :&nbsp;<a target="_blank" href="http://www.uml.org.cn/c%2B%2B/201305272.asp">http://www.uml.org.cn/c%2B%2B/201305272.asp</a>
+    </p>
+    <p>From :&nbsp;<a target="_blank"
+                      href="http://bbs.csdn.net/topics/390269815">http://bbs.csdn.net/topics/390269815</a></p>
+    <p>From :&nbsp;<a target="_blank" href="http://developer.51cto.com/art/201512/502598.htm">http://developer.51cto.com/art/201512/502598.htm</a>
+    </p>
+    <p>From :&nbsp;<a target="_blank" href="http://www.cnblogs.com/ggjucheng/archive/2011/12/18/2292089.html">http://www.cnblogs.com/ggjucheng/archive/2011/12/18/2292089.html</a>
+    </p>
+    <p>From :&nbsp;<a target="_blank" href="http://blog.csdn.net/dengzhouit/article/details/7012528">http://blog.csdn.net/dengzhouit/article/details/7012528</a>
+    </p>
+    <p><span style="font-size:24px;"><span
+            style="font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;font-size:13px;"><br></span></span></p>
+    <p><span style="font-size:24px;"><strong><span
+            style="font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;font-size:13px;">标准异常参考&nbsp;<a
+            target="_blank" href="http://www.cplusplus.com/reference/std/stdexcept/">http://www.cplusplus.com/reference/std/stdexcept/</a></span></strong><br></span>
+    </p>
+    <h1 id="slide-0"><span style="font-size:24px;">什么是异常处理</span></h1>
+    <p>一句话：异常处理就是处理程序中的错误。<br></p>
+    <h1 id="slide-1">为什么需要异常处理，以及异常处理的基本思想</h1>
+    <p>C++之父Bjarne Stroustrup在《The C++ Programming
+        Language》中讲到：一个库的作者可以检测出发生了运行时错误，但一般不知道怎样去处理它们（因为和用户具体的应用有关）；另一方面，库的用户知道怎样处理这些错误，但却无法检查它们何时发生（如果能检测，就可以再用户的代码里处理了，不用留给库去发现）。<br>
+    </p>
+    <p>Bjarne Stroustrup说：提供异常的基本目的就是为了处理上面的问题。基本思想是：让一个函数在发现了自己无法处理的错误时抛出（throw）一个异常，然后它的（直接或者间接）调用者能够处理这个问题。<br></p>
+    <p>The fundamental idea is that a function that finds a problem it cannot cope with throws an exception, hoping that
+        its (direct or indirect) caller can handle the problem.<br></p>
+    <p>也就是《C++ primer》中说的：将问题检测和问题处理相分离。<br></p>
+    <p>Exceptions let us separate problem detection from problem resolution<br></p>
+    <p>
+        一种思想：在所有支持异常处理的编程语言中（例如java），要认识到的一个思想：在异常处理过程中，由问题检测代码可以抛出一个对象给问题处理代码，通过这个对象的类型和内容，实际上完成了两个部分的通信，通信的内容是“出现了什么错误”。当然，各种语言对异常的具体实现有着或多或少的区别，但是这个通信的思想是不变的。<br>
+    </p>
+    <h1 id="slide-2">异常出现之前处理错误的方式</h1>
+    <p>&nbsp; &nbsp; &nbsp; &nbsp; 在C语言的世界中，对错误的处理总是围绕着两种方法：一是使用整型的返回值标识错误；二是使用errno宏（可以简单的理解为一个全局整型变量）去记录错误。</p>
+    <p>&nbsp; &nbsp; &nbsp; &nbsp;
+        当然C++中仍然是可以用这两种方法的。这两种方法最大的缺陷就是会出现不一致问题。例如有些函数返回1表示成功，返回0表示出错；而有些函数返回0表示成功，返回非0表示出错。还有一个缺点就是函数的返回值只有一个，你通过函数的返回值表示错误代码，那么函数就不能返回其他的值。当然，你也可以过指针或者C++的引用来返回另外的值，但是这样可能会令你的程序略微晦涩难懂。</p>
+    <h1 id="slide-3">异常为什么好</h1>
+    <p><strong><span style="font-size:14px;">在如果使用异常处理的优点有以下几点：</span></strong></p>
+    <p>1.
+        函数的返回值可以忽略，但异常不可忽略。如果程序出现异常，但是没有被捕获，程序就会终止，这多少会促使程序员开发出来的程序更健壮一点。而如果使用C语言的error宏或者函数返回值，调用者都有可能忘记检查，从而没有对错误进行处理，结果造成程序莫名其面的终止或出现错误的结果。<br>
+    </p>
+    <p>2. 整型返回值没有任何语义信息。而异常却包含语义信息，有时你从类名就能够体现出来。<br></p>
+    <p>3. 整型返回值缺乏相关的上下文信息。异常作为一个类，可以拥有自己的成员，这些成员就可以传递足够的信息。<br></p>
+    <p>4.
+        异常处理可以在调用跳级。这是一个代码编写时的问题：假设在有多个函数的调用栈中出现了某个错误，使用整型返回码要求你在每一级函数中都要进行处理。而使用异常处理的栈展开机制，只需要在一处进行处理就可以了，不需要每级函数都处理。</p>
+    <h1 id="slide-4">C++中使用异常时应注意的问题</h1>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        任何事情都是两面性的，异常有好处就有坏处。如果你是C++程序员，并且希望在你的代码中使用异常，那么下面的问题是你要注意的。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        1. 性能问题。这个一般不会成为瓶颈，但是如果你编写的是高性能或者实时性要求比较强的软件，就需要考虑了。<br>
+        （如果你像我一样，曾经是java程序员，那么下面的事情可能会让你一时迷糊，但是没办法，谁叫你现在学的是C++呢。）</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        2. 指针和动态分配导致的内存回收问题：在C++中，不会自动回收动态分配的内存，如果遇到异常就需要考虑是否正确的回收了内存。在java中，就基本不需要考虑这个，有垃圾回收机制真好！</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;"
+       data-spm-anchor-id="a2c6h.12873639.0.i1.2f2f322cnADOGu">
+        3. 函数的异常抛出列表：java中是如果一个函数没有在异常抛出列表中显式指定要抛出的异常，就不允许抛出；可是在C++中是如果你没有在函数的异常抛出列表指定要抛出的异常，意味着你可以抛出任何异常。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        4. C++中编译时不会检查函数的异常抛出列表。这意味着你在编写C++程序时，如果在函数中抛出了没有在异常抛出列表中声明的异常，编译时是不会报错的。而在java中，eclipse的提示功能真的好强大啊！</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        5.
+        在java中，抛出的异常都要是一个异常类；但是在C++中，你可以抛出任何类型，你甚至可以抛出一个整型。（当然，在C++中如果你catch中接收时使用的是对象，而不是引用的话，那么你抛出的对象必须要是能够复制的。这是语言的要求，不是异常处理的要求）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        6. 在C++中是没有finally关键字的。而java和python中都是有finally关键字的。</p>
+    <h1 id="slide-5">异常的基本语法</h1>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        1. 抛出和捕获异常</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        很简单，抛出异常用throw，捕获用try……catch。</p>
+    <p style="border:0px;margin-top:0px;margin-bottom:0px;padding-top:0px;padding-bottom:0px;line-height:2em;font-size:13px;font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:rgb(51,51,51);">
+        &nbsp; &nbsp; &nbsp; &nbsp; C++ 异常处理涉及到三个关键字：<strong>try、catch、throw</strong>。</p>
+    <ul class="list"
+        style="border:0px;margin:1em 0px;padding:0px;line-height:16.8px;list-style:none;color:rgb(51,51,51);font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, STHeiti, 'Microsoft Yahei', sans-serif;">
+        <li style="border:0px;margin:0px 0px 1em 1em;padding:0px 0px 0px 1.5em;line-height:1.5em;font-size:13px;">
+            <strong>throw:</strong>&nbsp;<span
+                style="color:rgb(51,51,51);font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, STHeiti, 'Microsoft Yahei', sans-serif;font-size:13px;text-indent:26px;">使用&nbsp;</span><span
+                style="color:rgb(51,51,51);font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, STHeiti, 'Microsoft Yahei', sans-serif;font-size:13px;"><strong>throw</strong></span><span
+                style="color:rgb(51,51,51);font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, STHeiti, 'Microsoft Yahei', sans-serif;font-size:13px;text-indent:26px;">&nbsp;关键字，</span>当程序出现问题时会抛出一个异常。使用
+            throw 语句在代码块中的任何地方抛出异常。throw 语句的操作数可以是任意的表达式，表达式的结果的类型决定了抛出的异常的类型。
+        </li>
+        <li style="border:0px;margin:0px 0px 1em 1em;padding:0px 0px 0px 1.5em;line-height:1.5em;font-size:13px;">
+            <strong>catch:</strong>&nbsp;在您想要处理问题的地方，通过异常处理程序捕获异常。<strong>catch</strong>&nbsp;关键字用于捕获异常。
+        </li>
+        <li style="border:0px;margin:0px 0px 1em 1em;padding:0px 0px 0px 1.5em;line-height:1.5em;font-size:13px;">
+            <strong>try:&nbsp;try</strong>&nbsp;块中的代码标识将被激活的特定异常。它后面通常跟着一个或多个 catch 块。
+        </li>
+        <li style="border:0px;margin:0px 0px 1em 1em;padding:0px 0px 0px 1.5em;line-height:1.5em;font-size:13px;">
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                函数和函数可能抛出的异常集合作为函数声明的一部分是有价值的，例如</p>
+            <div class="cnblogs_code"
+                 style="background-color:rgb(245,245,245);border:1px solid rgb(204,204,204);padding:5px;overflow:auto;margin:5px 0px;font-family:'Courier New';">
+                <pre><span style="color:rgb(0,0,255);line-height:1.5;">void</span> f(<span
+                        style="color:rgb(0,0,255);line-height:1.5;">int</span> a) <span
+                        style="color:rgb(0,0,255);line-height:1.5;">throw</span> (x2,x3);</pre>
+            </div>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                表示f()只能抛出两个异常x2,x3,以及这些类型派生的异常，但不会抛出其他异常。如果f函数违反了这个规定，抛出了x2,x3之外的异常,例如x4,那么当函数f抛出x4异常时，<br>
+                会转换为一个std::unexpected()调用，默认是调用std::terminate(),通常是调用abort()。</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                如果函数不带异常描述，那么假定他可能抛出任何异常。例如:</p>
+            <div class="cnblogs_code"
+                 style="background-color:rgb(245,245,245);border:1px solid rgb(204,204,204);padding:5px;overflow:auto;margin:5px 0px;font-family:'Courier New';">
+                <pre><span style="color:rgb(0,0,255);line-height:1.5;">int</span> f();  <span
+                        style="color:rgb(0,128,0);line-height:1.5;">//</span><span
+                        style="color:rgb(0,128,0);line-height:1.5;">可能抛出任何异常</span></pre>
+            </div>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                不带任何异常的函数可以用空表表示:</p>
+            <div class="cnblogs_code"
+                 style="background-color:rgb(245,245,245);border:1px solid rgb(204,204,204);padding:5px;overflow:auto;margin:5px 0px;font-family:'Courier New';">
+                <pre><span style="color:rgb(0,0,255);line-height:1.5;">int</span> g() <span
+                        style="color:rgb(0,0,255);line-height:1.5;">throw</span> (); <span
+                        style="color:rgb(0,128,0);line-height:1.5;">//</span><span
+                        style="color:rgb(0,128,0);line-height:1.5;"> 不会抛出任何异常</span></pre>
+            </div>
+            捕获异常<br>
+        </li>
+        <li style="border:0px;margin:0px 0px 1em 1em;padding:0px 0px 0px 1.5em;line-height:1.5em;font-size:13px;">
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                捕获异常的代码一般如下:</p>
+            <div class="cnblogs_code"
+                 style="background-color:rgb(245,245,245);border:1px solid rgb(204,204,204);padding:5px;overflow:auto;margin:5px 0px;font-family:'Courier New';">
+<pre><span style="color:rgb(0,0,255);line-height:1.5;">try</span> {
+    <span style="color:rgb(0,0,255);line-height:1.5;">throw</span> E();
+}
+<span style="color:rgb(0,0,255);line-height:1.5;">catch</span> (H h) {
+     <span style="color:rgb(0,128,0);line-height:1.5;">//</span><span style="color:rgb(0,128,0);line-height:1.5;">何时我们可以能到这里呢</span><span
+            style="color:rgb(0,128,0);line-height:1.5;">
+</span>}</pre>
+            </div>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                1.如果H和E是相同的类型</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                2.如果H是E的基类</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                3.如果H和E都是指针类型，而且1或者2对它们所引用的类型成立</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                4.如果H和E都是引用类型，而且1或者2对H所引用的类型成立</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                从原则上来说，异常在抛出时被复制，我们最后捕获的异常只是原始异常的一个副本，所以我们不应该抛出一个不允许抛出一个不允许复制的异常。</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                此外，我们可以在用于捕获异常的类型加上const，就像我们可以给函数加上const一样，限制我们，不能去修改捕捉到的那个异常。</p>
+            <p style="font-size:13px;line-height:1.5;margin:10px auto;font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;">
+                还有,捕获异常时如果H和E不是引用类型或者指针类型，而且H是E的基类，那么h对象其实就是H h = E(),最后捕获的异常对象h会丢失E的附加携带信息。</p>
+        </li>
+    </ul>
+    <pre class="cpp" data-spm-anchor-id="a2c6h.12873639.0.i2.2f2f322cnADOGu">try
+{
+   // 保护代码
+}catch( ExceptionName e1 )
+{
+   // catch 块
+}catch( ExceptionName e2 )
+{
+   // catch 块
+}catch( ExceptionName eN )
+{
+   // catch 块
+}
+}catch(...) //三个点代表捕获所有异常
+{
+   // catch 块
+}</pre>
+    <pre class="cpp">double division(int a, int b)
+{
+    if( b == 0 )
+    {
+        throw "Division by zero condition!";
+        cout &lt;&lt; "throw 后面的语句不再执行" &lt;&lt;endl;
+    }
+    return (a/b);
+}
+int main(void)
+{
+    try
+    {
+        division(5, 0);
+    }
+    catch(const char* error)
+    {
+        cout &lt;&lt; error &lt;&lt;endl;
+    }
+    return 0;
+}</pre>
+    <pre class="cpp">#include &lt;iostream&gt;
+using namespace std;
+int main(void)
+{
+    try
+    {
+        throw 3.0;
+    }
+    catch (int) //如果处理块内不需要该变量，可以省略形参
+    {
+        cout &lt;&lt; "int exception happened!" &lt;&lt; endl;
+    }
+    catch (double d)
+    {
+        cout &lt;&lt; d &lt;&lt; " double exception happened!" &lt;&lt; endl;
+    }
+    catch (…)
+    {
+        cout &lt;&lt; "unknown exception happened!" &lt;&lt; endl;
+    }
+    return 0;
+}
+</pre>
+    <p style="color:rgb(51,51,51);"><strong><span style="font-size:18px;">说明：</span></strong></p>
+    <p style="color:rgb(51,51,51);">1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;可以抛出一个任意类型的<strong>变量(或表达式)</strong>(包括内置类型如int的变量，或者自定义的类型的变量)，catch&nbsp;按照被抛出变量的<strong><span
+            style="color:#FF0000;">编译时类型</span></strong>进行匹配，找到<strong>第一个匹配</strong>的类型即进入异常处理。</p>
+    <p style="color:rgb(51,51,51);">2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;异常处理是为了保证使程序能够不异常退出。</p>
+    <p style="color:rgb(51,51,51);">3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;建议：尽量不要使用throw抛出内置类型的变量。</p>
+    <p style="color:rgb(51,51,51);">4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果throw抛出的异常找不到匹配的类型，最终程序将调用C
+        standard Library的terminate函数，程序将异常退出。</p>
+    <p style="color:rgb(51,51,51);">
+        5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当程序跳出try块时，try块内的<strong>局部变量被自动释放</strong>，对象的析构函数被调用。所以，为了保证程序不异常退出，应该保证析构函数不会抛出异常。
+    </p>
+    <p style="color:rgb(51,51,51);"><span style="background-color:rgb(51,255,51);"><strong><span
+            style="font-size:18px;">6)&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+            style="font-size:18px;">调用函数时，程序的控制权最终还会返回到函数的调用处，但是当你抛出一个异常时，控制权永远不会回到抛出异常的地方。</span></strong></span></p>
+    <p style="color:rgb(51,51,51);">7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;异常匹配时，<strong>只允许三种类型转换</strong>：const与非const；派生类与基类；数组与指针。(注意：不允许算术转换.)
+    </p>
+    <p style="color:rgb(51,51,51);">
+        8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;建议：catch子句的次序必须反映类型层次，派生类放到基类前面。</p>
+    <p style="color:rgb(51,51,51);">9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw出的对象称为<strong><span
+            style="color:#FF0000;">异常对象</span><span style="color:#FF0000;">(exception object)</span><span
+            style="color:#FF0000;">，由编译器管理</span></strong>，catch接受到的对象如果不是引用或指针的话，则进行<strong>对象拷贝</strong>。但是<strong>异常对象是程序结束才被释放</strong>。
+    </p>
+    <p style="color:rgb(51,51,51);">
+        10)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;异常可以发生在<strong>构造函数中</strong>或者<strong>构造函数初始化式</strong>中。注意：如果异常发生在构造函数中，对象的析构函数将不会被调用！所以需要在<strong>构造函数中</strong>进行try-catch自己释放资源。另外，为了处理<strong>构造函数初始化式中可能发生的异常</strong>，语法应该修改为如下：
+    </p>
+    <pre class="cpp">//normal constructor
+UserClass(): m_nA(1), m_nB(2) { /*constructor body*/ }
+
+//constructor using function try block
+UserClass() try: m_nA(1), m_nB(2){ /*constructor body*/ }catch(…){ }  </pre>
+    <p style="color:rgb(51,51,51);">11)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标准库异常类定义在头文件中</p>
+    <p style="color:rgb(51,51,51);"><strong><span style="font-size:18px;">重新抛出：</span></strong></p>
+    <p style="color:rgb(51,51,51);">在catch块或被catch块调用的函数中，可以用”throw;”语句(throw空对象)将异常重新抛出。</p>
+    <p style="color:rgb(51,51,51);"><strong><span
+            style="font-size:18px;">异常规格说明(exception specification)：</span></strong></p>
+    <p style="color:rgb(51,51,51);">说明函数将会抛出什么类型的异常。</p>
+    <pre class="cpp">void func(int i) throw (runtime_error); //说明该函数func有可能抛出runtime_error异常
+void func(int i) throw(); //说明函数func不会抛出任何异常  </pre>
+    <p style="color:rgb(51,51,51);">1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果函数运行时抛出了其他类型的异常，程序将会调用标准库的unexpected函数，该函数将调用terminate退出程序。</p>
+    <p style="color:rgb(51,51,51);">2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;派生类的虚函数的异常规格说明只能和基类一样或比基类更严格，不能增加新的异常类型。</p>
+    <p style="color:rgb(51,51,51);">3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>注意：</strong>一般<strong>只会使用throw()</strong>来说明一个函数是安全的，不会抛出任何异常，这样编译器就可以对调用该函数的代码做出优化。一般不会使用其他的异常规格说明。
+    </p>
+    <p style="color:rgb(51,51,51);">标准异常库：（见头文件 ）其中，类exception的定义如下</p>
+    <pre class="cpp">class exception
+{
+public:
+    exception();
+    exception(const char* const &amp;);
+    exception(const exception&amp;);
+    exception&amp; operator= (const exception&amp;);
+    virtual ~exception();
+    virtual char* what() const;  //获得信息
+private:
+    const char* _m_what;
+    int _m_doFree;
+};  </pre>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>捕获异常时的注意事项：</strong></p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        1.
+        catch子句中的异常说明符必须是完全类型，不可以为前置声明，因为你的异常处理中常常要访问异常类的成员。例外：只有你的catch子句使用指针或者引用接收参数，并且在catch子句内你不访问异常类的成员，那么你的catch子句的异常说明符才可以是前置声明的类型。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        2. catch的匹配过程是找最先匹配的，不是最佳匹配。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        3. catch的匹配过程中，对类型的要求比较严格。不允许标准算术转换和类类型的转换。（类类型的转化包括两种：通过构造函数的隐式类型转化和通过转化操作符的类型转化）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        4. 和函数参数相同的地方有：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 如果catch中使用基类对象接收子类对象，那么会造成子类对象分隔（slice）为父类子对象（通过调用父类的复制构造函数）；</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 如果catch中使用基类对象的引用接受子类对象，那么对虚成员的访问时，会发生动态绑定，即会多态调用。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 如果catch中使用基类对象的指针，那么一定要保证throw语句也要抛出指针类型，并且该指针所指向的对象，在catch语句执行是还存在（通常是动态分配的对象指针）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        5. 和函数参数不同的地方有：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ①
+        如果throw中抛出一个对象，那么无论是catch中使用什么接收（基类对象、引用、指针或者子类对象、引用、指针），在传递到catch之前，编译器都会另外构造一个对象的副本。也就是说，如果你以一个throw语句中抛出一个对象类型，在catch处通过也是通过一个对象接收，那么该对象经历了两次复制，即调用了两次复制构造函数。一次是在throw时，将“抛出到对象”复制到一个“临时对象”（这一步是必须的），然后是因为catch处使用对象接收，那么需要再从“临时对象”复制到“catch的形参变量”中；
+        如果你在catch中使用“引用”来接收参数，那么不需要第二次复制，即形参的引用指向临时变量。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ②
+        该对象的类型与throw语句中体现的静态类型相同。也就是说，如果你在throw语句中抛出一个指向子类对象的父类引用，那么会发生分割现象，即只有子类对象中的父类部分会被抛出，抛出对象的类型也是父类类型。（从实现上讲，是因为复制到“临时对象”的时候，使用的是throw语句中类型的（这里是父类的）复制构造函数）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 不可以进行标准算术转换和类的自定义转换：在函数参数匹配的过程中，可以进行很多的类型转换。但是在异常匹配的过程中，转换的规则要严厉。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ④ 异常处理机制的匹配过程是寻找最先匹配（first fit），函数调用的过程是寻找最佳匹配（best fit）。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        2. 异常类型</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        上面已经提到过，在C++中，你可以抛出任何类型的异常。（哎，竟然可以抛出任何类型，刚看到到这个的时候，我半天没反应过来，因为java中这样是不行的啊）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>注意：</strong>也是上面提到过的，在C++中如果你throw语句中抛出一个对象，那么你抛出的对象必须要是能够复制的。因为要进行复制副本传递，这是语言的要求，不是异常处理的要求。（在上面“和函数参数不同的地方”中也讲到了，因为是要复制先到一个临时变量中）
+    </p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        3. 栈展开</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        栈展开指的是：当异常抛出后，匹配catch的过程。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        抛出异常时，将暂停当前函数的执行，开始查找匹配的catch子句。沿着函数的嵌套调用链向上查找，直到找到一个匹配的catch子句，或者找不到匹配的catch子句。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>注意事项：</strong></p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        1. 在栈展开期间，会销毁局部对象。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 如果局部对象是类对象，那么通过调用它的析构函数销毁。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 但是对于通过动态分配得到的对象，编译器不会自动删除，所以我们必须手动显式删除。（这个问题是如此的常见和重要，以至于会用到一种叫做RAII的方法，详情见下面讲述）</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        2. 析构函数应该从不抛出异常。如果析构函数中需要执行可能会抛出异常的代码，那么就应该在析构函数内部将这个异常进行处理，而不是将异常抛出去。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        原因：在为某个异常进行栈展开时，析构函数如果又抛出自己的未经处理的另一个异常，将会导致调用标准库 terminate 函数。而默认的terminate 函数将调用 abort 函数，强制从整个程序非正常退出。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        3. 构造函数中可以抛出异常。但是要注意到：如果构造函数因为异常而退出，那么该类的析构函数就得不到执行。所以要手动销毁在异常抛出前已经构造的部分。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        4. 异常重新抛出</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        语法：使用一个空的throw语句。即写成： throw;</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>注意问题：</strong></p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① throw; 语句出现的位置，只能是catch子句中或者是catch子句调用的函数中。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 重新抛出的是原来的异常对象，即上面提到的“临时变量”，不是catch形参。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 如果希望在重新抛出之前修改异常对象，那么应该在catch中使用引用参数。如果使用对象接收的话，那么修改异常对象以后，不能通过“重新抛出”来传播修改的异常对象，因为重新抛出不是catch形参，应该使用的是 throw e;
+        这里“e”为catch语句中接收的对象参数。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        5. 捕获所有异常（匹配任何异常）</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        语法：在catch语句中，使用三个点（…）。即写成：catch (…) 这里三个点是“通配符”，类似 可变长形式参数。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        常见用法：与“重新抛出”表达式一起使用，在catch中完成部分工作，然后重新抛出异常。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        6. 未捕获的异常</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        意思是说，如果程序中有抛出异常的地方，那么就一定要对其进行捕获处理。否则，如果程序执行过程中抛出了一个异常，而又没有找到相应的catch语句，那么会和“栈展开过程中析构函数抛出异常”一样，会 调用terminate
+        函数，而默认的terminate 函数将调用 abort 函数，强制从整个程序非正常退出。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        7. 构造函数的函数测试块</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        对于在构造函数的初始化列表中抛出的异常，必须使用函数测试块（function try block）来进行捕捉。语法类型下面的形式：</p>
+    <pre class="cpp">MyClass::MyClass(int i)
+try :member(i) {
+    //函数体
+} catch(异常参数) {
+    //异常处理代码
+}</pre>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>注意事项：</strong>在函数测试块中捕获的异常，在catch语句中可以执行一个内存释放操作，然后异常仍然会再次抛出到用户代码中。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        8. 异常抛出列表（异常说明 exception specification）</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        就是在函数的形参表之后（如果是const成员函数，那么在const之后），使用关键字throw声明一个带着括号的、可能为空的 异常类型列表。形如：throw () 或者 throw (runtime_error,
+        bad_alloc) 。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>含义：</strong>表示该函数只能抛出 在列表中的异常类型。例如：throw() 表示不抛出任何异常。而throw (runtime_error, bad_alloc)表只能抛出runtime_error
+        或bad_alloc两种异常。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <strong>注意事项：</strong>（以前学java的尤其要注意，和java中不太一样）</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 如果函数没有显式的声明 抛出列表，表示异常可以抛出任意列表。（在java中，如果没有异常抛出列表，那么是不能抛出任何异常的）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② C++的 “throw()”相当于java的不声明抛出列表。都表示不抛出任何异常。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③
+        在C++中，编译的时候，编译器不会对异常抛出列表进行检查。也就是说，如果你声明了抛出列表，即使你的函数代码中抛出了没有在抛出列表中指定的异常，你的程序依然可以通过编译，到运行时才会出错，对于这样的异常，在C++中称为“意外异常”（unexpeced
+        exception）。（这点和java又不相同，在java中，是要进行严格的检查的）。</p>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        意外异常的处理：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        如果程序中出现了意外异常，那么程序就会调用函数unexpected()。这个函数的默认实现是调用terminate函数，即默认最终会终止程序。</p>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        虚函数重载方法时异常抛出列表的限制：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        在子类中重载时，函数的异常说明 必须要比父类中要同样严格，或者更严格。换句话说，在子类中相应函数的异常说明不能增加新的异常。或者再换句话说：父类中异常抛出列表是该虚函数的子类重载版本可以抛出异常列表的 超集。</p>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        函数指针中异常抛出列表的限制：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        异常抛出列表是函数类型的一部分，在函数指针中也可以指定异常抛出列表。但是在函数指针初始化或者赋值时，除了要检查返回值和形式参数外，还要注意异常抛出列表的限制：源指针的异常说明必须至少和目标指针的一样严格。比较拗口，换句话说，就是声明函数指针时指定的异常抛出列表，一定要实际函数的异常抛出列表的超集。
+        如果定义函数指针时不提供异常抛出列表，那么可以指向能够抛出任意类型异常的函数。</p>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        抛出列表是否有用：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        在《More effective C++》第14条，Scott Meyers指出“要谨慎的使用异常说明”（Use exception specifications
+        judiciously）。“异常说明”，就是我们所有的“异常抛出列表”。之所以要谨慎，根本原因是因为C++编译器不会检查异常抛出列表，这样就可能在函数代码中、或者调用的函数中抛出了没有在抛出列表中指定的异常，从而导致程序调用unexpected函数，造成程序提前终止。同时他给出了三条要考虑的事情：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 在模板中不要使用异常抛出列表。（原因很简单，连用来实例模板的类型都不知道，也就无法确定该函数是否应该抛出异常，抛出什么异常）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 如果A函数内调用了B函数，而B函数没有声明异常抛出列表，那么A函数本身也不应该设定异常抛出列表。（原因是，B函数可能抛出没有在A函数的异常抛出列表中声明的异常，会导致调用unex函数）；</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 通过set_unexpected函数指定一个新的unexpected函数，在该函数中捕获异常，并抛出一个统一类型的异常。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        另外，在《C++ Primer》4th 中指出，虽然异常说明应用有限，但是如果能够确定该函数不会抛出异常，那么显式声明其不抛出任何异常 有好处。通过语句："throw
+        ()"。这样的好处是：对于程序员，当调用这样的函数时，不需要担心异常。对于编译器，可以执行被可能抛出异常所抑制的优化。</p>
+    <h1 id="slide-6">标准库中的异常类</h1>
+    <p><span style="font-family:'宋体';font-size:14px;text-indent:26.6667px;"><strong>异常类继承层级结构图如下：</strong></span><br>
+    </p>
+    <p style="text-align:center;"><img
+            src="http://img.blog.csdn.net/20170318180903132?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnJlZWtpbmcxMDE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"
+            alt=""><br></p>
+    <p><strong><span style="font-size:18px;">也可以这样看层次结构图</span></strong></p>
+    <p style="text-align:center;"><img
+            src="http://img.blog.csdn.net/20170318181017900?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnJlZWtpbmcxMDE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"
+            alt=""><br></p>
+    <p></p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        每个类所在的头文件在图下方标识出来。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        标准异常类的成员：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 在上述继承体系中，每个类都有提供了构造函数、复制构造函数、和赋值操作符重载。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② logic_error类及其子类、runtime_error类及其子类，它们的构造函数是接受一个string类型的形式参数，用于异常信息的描述</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 所有的异常类都有一个what()方法，返回const char* 类型（C风格字符串）的值，描述异常信息。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+    </p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        标准异常类的具体描述：</p>
+    <table border="0" class="content" style="color:rgb(0,0,0);font-family:'宋体';font-size:12px;line-height:20px;">
+        <tbody>
+        <tr>
+            <td style="vertical-align:top;">
+                <div>异常名称</div>
+            </td>
+            <td style="vertical-align:top;">
+                <div>描述</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">exception</td>
+            <td style="vertical-align:top;">所有标准异常类的父类</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">bad_alloc</td>
+            <td style="vertical-align:top;">当operator new and operator new[]，请求分配内存失败时</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">bad_exception</td>
+            <td style="vertical-align:top;">
+                这是个特殊的异常，如果函数的异常抛出列表里声明了bad_exception异常，当函数内部抛出了异常抛出列表中没有的异常，这是调用的unexpected函数中若抛出异常，不论什么类型，都会被替换为bad_exception类型
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">bad_typeid</td>
+            <td style="vertical-align:top;">使用typeid操作符，操作一个NULL指针，而该指针是带有虚函数的类，这时抛出bad_typeid异常</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">bad_cast</td>
+            <td style="vertical-align:top;">使用dynamic_cast转换引用失败的时候</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">ios_base::failure</td>
+            <td style="vertical-align:top;">io操作过程出现错误</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">logic_error</td>
+            <td style="vertical-align:top;">逻辑错误，可以在运行前检测的错误</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">runtime_error</td>
+            <td align="left" style="vertical-align:top;">运行时错误，仅在运行时才可以检测的错误</td>
+        </tr>
+        </tbody>
+    </table>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        logic_error的子类：</p>
+    <table border="0" class="content" style="color:rgb(0,0,0);font-family:'宋体';font-size:12px;line-height:20px;">
+        <tbody>
+        <tr>
+            <td style="vertical-align:top;">
+                <div>异常名称</div>
+            </td>
+            <td style="vertical-align:top;">
+                <div>描述</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">length_error</td>
+            <td style="vertical-align:top;">试图生成一个超出该类型最大长度的对象时，例如vector的resize操作</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">domain_error</td>
+            <td style="vertical-align:top;">参数的值域错误，主要用在数学函数中。例如使用一个负值调用只能操作非负数的函数</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">bad_exceptionout_of_range</td>
+            <td style="vertical-align:top;">超出有效范围</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">invalid_argument</td>
+            <td style="vertical-align:top;">参数不合适。在标准库中，当利用string对象构造bitset时，而string中的字符不是’0’或’1’的时候，抛出该异常</td>
+        </tr>
+        </tbody>
+    </table>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        runtime_error的子类：</p>
+    <table border="0" class="content" style="color:rgb(0,0,0);font-family:'宋体';font-size:12px;line-height:20px;">
+        <tbody>
+        <tr>
+            <td style="vertical-align:top;">
+                <div>异常名称</div>
+            </td>
+            <td style="vertical-align:top;">
+                <div>描述</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">range_error</td>
+            <td style="vertical-align:top;">计算结果超出了有意义的值域范围</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">overflow_error</td>
+            <td style="vertical-align:top;">算术计算上溢</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">underflow_error</td>
+            <td style="vertical-align:top;">算术计算下溢</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">invalid_argument</td>
+            <td style="vertical-align:top;">参数不合适。在标准库中，当利用string对象构造bitset时，而string中的字符不是’0’或’1’的时候，抛出该异常</td>
+        </tr>
+        </tbody>
+    </table>
+    <p style="border:0px;margin-top:0px;margin-bottom:0px;padding-top:0px;padding-bottom:0px;line-height:2em;font-size:13px;font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:rgb(51,51,51);">
+    </p>
+    <p style="border:0px;margin-top:0px;margin-bottom:0px;padding-top:0px;padding-bottom:0px;line-height:2em;font-size:13px;font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;color:rgb(51,51,51);">
+        下表是对上面层次结构中出现的每个异常的说明：</p>
+    <table class="reference notranslate"
+           style="border:0px;margin:4px 0px;padding:0px;border-collapse:collapse;width:729px;color:rgb(51,51,51);font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, STHeiti, 'Microsoft Yahei', sans-serif;font-size:12px;">
+        <tbody style="border:0px;margin:0px;padding:0px;">
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <th style="border:1px solid rgb(85,85,85);margin:0px;padding:3px;color:rgb(255,255,255);background-color:rgb(85,85,85);vertical-align:top;text-align:left;">
+                异常
+            </th>
+            <th style="border:1px solid rgb(85,85,85);margin:0px;padding:3px;color:rgb(255,255,255);background-color:rgb(85,85,85);vertical-align:top;text-align:left;">
+                描述
+            </th>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                <strong>std::exception</strong>
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                该异常是所有标准 C++ 异常的父类。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::bad_alloc
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                该异常可以通过&nbsp;<strong>new</strong>&nbsp;抛出。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::bad_cast
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                该异常可以通过&nbsp;<strong>dynamic_cast</strong>&nbsp;抛出。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::bad_exception
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                这在处理 C++ 程序中无法预期的异常时非常有用。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::bad_typeid
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                该异常可以通过&nbsp;<strong>typeid</strong>&nbsp;抛出。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                <strong>std::logic_error</strong>
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                理论上可以通过读取代码来检测到的异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::domain_error
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                当使用了一个无效的数学域时，会抛出该异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::invalid_argument
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                当使用了无效的参数时，会抛出该异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::length_error
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                当创建了太长的 std::string 时，会抛出该异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::out_of_range
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                该异常可以通过方法抛出，例如 std::vector 和 std::bitset&lt;&gt;::operator[]()。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                <strong>std::runtime_error</strong>
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                理论上不可以通过读取代码来检测到的异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::overflow_error
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                当发生数学上溢时，会抛出该异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::range_error
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                当尝试存储超出范围的值时，会抛出该异常。
+            </td>
+        </tr>
+        <tr style="border:0px;margin:0px;padding:0px;background-color:rgb(246,244,240);">
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                std::underflow_error
+            </td>
+            <td style="border:1px solid rgb(212,212,212);margin:0px;padding:7px 5px;font-size:13px;line-height:2em;vertical-align:top;">
+                当发生数学下溢时，会抛出该异常。
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <h1 id="slide-7"><strong><span style="font-size:24px;">编写自己的异常类</span></strong></h1>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        1. 为什么要编写自己的异常类？</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 标准库中的异常是有限的；</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 在自己的异常类中，可以添加自己的信息。（标准库中的异常类值允许设置一个用来描述异常的字符串）。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        2. 如何编写自己的异常类？</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 建议自己的异常类要继承标准异常类。因为C++中可以抛出任何类型的异常，所以我们的异常类可以不继承自标准异常，但是这样可能会导致程序混乱，尤其是当我们多人协同开发时。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 当继承标准异常类时，应该重载父类的what函数和虚析构函数。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 因为栈展开的过程中，要复制异常类型，那么要根据你在类中添加的成员考虑是否提供自己的复制构造函数。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        <span style="color:rgb(51,51,51);font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;">可以通过继承和重载&nbsp;</span><span
+            style="color:rgb(51,51,51);font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;">exception</span><span
+            style="color:rgb(51,51,51);font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;">&nbsp;类来定义新的异常。下面的实例演示了如何使用
+ std::exception 类来实现自己的异常：</span></p>
+    <pre class="cpp">#include &lt;iostream&gt;
+#include &lt;exception&gt;
+using namespace std;
+
+struct MyException : public exception
+{
+    const char * what () const throw ()
+    {
+        return "C++ Exception";
+    }
+};
+
+int main()
+{
+    try
+    {
+        throw MyException();
+    }
+    catch(MyException&amp; e)
+    {
+        std::cout &lt;&lt; "MyException caught" &lt;&lt; std::endl;
+        std::cout &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+    catch(std::exception&amp; e)
+    {
+        //其他的错误
+    }
+}
+</pre>
+    <p><span
+            style="color:rgb(51,51,51);font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;">what()</span><span
+            style="color:rgb(51,51,51);font-family:'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;">&nbsp;是异常类提供的一个公共方法，它已被所有子异常类重载。这将返回异常产生的原因。</span>
+    </p>
+    <p></p>
+    <h1 id="slide-8">用类来封装资源分配和释放</h1>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        为什么要使用类来封装资源分配和释放？</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        为了防止内存泄露。因为在函数中发生异常，那么对于动态分配的资源，就不会自动释放，必须要手动显式释放，否则就会内存泄露。而对于类对象，会自动调用其析构函数。如果我们在析构函数中显式delete这些资源，就能保证这些动态分配的资源会被释放。</p>
+    <p style="text-indent:20pt;font-family:'宋体';line-height:18px;font-weight:bold;">
+        如何编写这样的类？</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        将资源的分配和销毁用类封转起来。在析构函数中要显式的释放（delete或delete[]）这些资源。这样，若用户代码中发生异常，当作用域结束时，会调用给该类的析构函数释放资源。这种技术被称为：资源分配即初始化。（resource
+        allocation is initialization，缩写为"RAII"）。</p>
+    <h1 id="slide-9">auto_ptr的使用（非常重要）</h1>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        “用类封装资源的分配和释放”是如此的重要，C++标准库为我们提供了一个模板类来实现这个功能。名称为auto_ptr，在memory头文件中。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        auto_ptr类的成员如下：（摘自《C++ Primer》）</p>
+    <table border="0" class="content" style="color:rgb(0,0,0);font-family:'宋体';font-size:12px;line-height:20px;">
+        <tbody>
+        <tr>
+            <td style="vertical-align:top;">
+                <div>函数</div>
+            </td>
+            <td style="vertical-align:top;">
+                <div>功能</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">auto_ptr &lt;T&gt; ap()</td>
+            <td style="vertical-align:top;">默认构造函数，创建名为ap的未绑定的auto_ptr对象</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">auto_ptr&lt;T&gt; ap(p);</td>
+            <td style="vertical-align:top;">创建名为 ap 的 auto_ptr 对象，ap 拥有指针 p 指向的对象。该构造函数为 explicit</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">uto_ptr&lt;T&gt;ap1(ap2);</td>
+            <td style="vertical-align:top;">创建名为 ap1 的 auto_ptr 对象，ap1 保存原来存储在 ap2 中的指针。将所有权转给 ap1，ap2 成为未绑定的 auto_ptr
+                对象
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">ap1 = ap2</td>
+            <td style="vertical-align:top;">将所有权 ap2 转给 ap1。删除 ap1 指向的对象并且使 ap1 指向 ap2 指向的对象，使 ap2 成为未绑定的</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">~ap</td>
+            <td style="vertical-align:top;">析构函数。删除 ap 指向的对象</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">*ap</td>
+            <td style="vertical-align:top;">返回对 ap 所绑定的对象的引用</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">ap-&gt;</td>
+            <td style="vertical-align:top;">返回 ap 保存的指针</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">ap.reset(p)</td>
+            <td align="left" style="vertical-align:top;">如果 p 与 ap 的值不同，则删除 ap 指向的对象并且将 ap 绑定到 p</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">ap.release()</td>
+            <td align="left" style="vertical-align:top;">返回 ap 所保存的指针并且使 ap 成为未绑定的</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;">ap.get()</td>
+            <td align="left" style="vertical-align:top;">返回 ap 保存的指针</td>
+        </tr>
+        </tbody>
+    </table>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        auto_ptr类的使用：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        1. 用来保存一个指向对象类型的指针。注意必须是动态分配的对象（即使用new非配的）的指针。既不能是动态分配的数组（使用new []）指针，也不能是非动态分配的对象指针。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        2. 惯用的初始化方法：在用户代码中，使用new表达式作为auto_ptr构造函数的参数。（注意：auto_ptr类接受指针参数的构造函数为explicit，所以必须显式的进行初始化）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        3. auto_ptr的行为特征：类似普通指针行为。auto_ptr存在的主要原因就是，为了防止动态分配的对象指针造成的内存泄露，既然是指针，其具有"*"操作符和"-&gt;"操作符。所以auto_ptr的主要目的就是：首先保证自动删除auto_ptr所引用的对象，并且要支持普通指针行为。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        4. auto_ptr对象的复制和赋值是有破坏性的。① 会导致右操作数成为未绑定的，导致auto_ptr对象不能放到容器中；②
+        在赋值的时候，将有操作符修改为未绑定，即修改了右操作数，所以要保证这里的赋值操作符右操作数是可以修改的左值（然而普通的赋值操作符中，右操作数可以不是左值）；③和普通的赋值操作符一样，如果是自我赋值，那么没有效果；④
+        导致auto_ptr对象不能放到容器中。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        5. 如果auto_ptr初始化的时候，使用默认构造函数，成为未绑定的auto_ptr对象，那么可以通过reset操作将其绑定到一个对象。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        6. 如果希望测试auto_ptr是否已经绑定到了一个对象，那么使用get()函数的返回值与NULL进行比较。</p>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        auto_ptr的缺陷：</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        1. 不能使用auto_ptr对象保存指向静态分配的对象的指针，也不能保存指向动态分配的数组的指针。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        2. 不能讲两个auto_ptr对象指向同一个对象。因为在一个auto_ptr对象析构以后，造成另一个auto_ptr对象指向了已经释放的内存。造成这种情况的两种主要常见原因是：①
+        用同一个指针来初始化或者reset两个不同的auto_ptr对象；② 使用一个auto_ptr对象的get函数返回值去初始化或者reset另一个auto_ptr对象。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        3. 不能将auto_ptr对象放到容器中。因为其复制和赋值操作具有破坏性。</p>
+    <h1 id="slide-10">常见的异常处理问题</h1>
+    <p style="text-indent:20pt;font-size:14px;font-family:'宋体';line-height:18px;font-weight:bold;">
+        动态内存分配错误</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ① 分配动态内存使用的是new和new[]操作符，如果他们分配内存失败，就会抛出bad_alloc异常，在new头文件中，所以我们的代码中应该捕捉这些异常。常见的代码形式如下：</p>
+    <pre class="cpp">try {
+    //其他代码
+    ptr = new int[num_max];
+    //其他代码
+} catch(bad_alloc &amp;e) {
+    //这里常见的处理方式为：先释放已经分配的内存，然后结束程序，或者打印一条错误信息并继续执行
+}</pre>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ② 可以使用类似C语言的方式处理，但这时要使用的nothrow版本，使用"new (nothrow)"的形式分配内存。这时，如果分配不成功，返回的是NULL指针，而不再是抛出bad_alloc异常。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        ③ 可以定制内存分配失败行为。C++允许指定一个new 处理程序（newhandler）回调函数。默认的并没有new 处理程序，如果我们设置了new 处理程序，那么当new和new[] 分配内存失败时，会调用我们设定的new
+        处理程序，而不是直接抛出异常。通过set_new_handler函数来设置该回调函数。要求被回调的函数没有返回值，也没有形式参数。</p>
+    <h1 id="slide-11">来自C++之父Bjarne Stroustrup的建议</h1>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        节选自《The C++ Programming Language》 ——C++之父Bjarne Stroustrup</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        1. Don’t use exceptions where more local control structures will suffice; 当局部的控制能够处理时，不要使用异常；</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        2. Use the "resource allocation is initialization" technique to manage resources; 使用“资源分配即初始化”技术去管理资源；</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        3. Minimize the use of try-blocks. Use "resource acquisition is initialization" instead of explicit handler
+        code; 尽量少用try-catch语句块，而是使用“资源分配即初始化”技术。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        4. Throw an exception to indicate failure in a constructor; 如果构造函数内发生错误，通过抛出异常来指明。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;"
+       data-spm-anchor-id="a2c6h.12873639.0.i3.2f2f322cnADOGu">
+        5. Avoid throwing exceptions from destructors; 避免在析构函数中抛出异常。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        6. Keep ordinary code and error-handling code separate; 保持普通程序代码和异常处理代码分开。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        7. Beware of memory leaks caused by memory allocated by new not being released in case of an exception;
+        小心通过new分配的内存在发生异常时，可能造成内存泄露。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        8. Assume that every exception that can be thrown by a function will be thrown;
+        如果一个函数可能抛出某种异常，那么我们调用它时，就要假定它一定会抛出该异常，即要进行处理。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        9. Don't assume that every exception is derived from class exception; 要记住，不是所有的异常都继承自exception类。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        10. A library shouldn't unilaterally terminate a program. Instead, throw an exception and let a caller decide;
+        编写的供别人调用的程序库，不应该结束程序，而应该通过抛出异常，让调用者决定如何处理（因为调用者必须要处理抛出的异常）。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        11. Develop an error-handling strategy early in a design; 若开发一个项目，那么在设计阶段就要确定“错误处理的策略”。</p>
+    <p style="text-indent:2em;font-family:'宋体';font-size:13px;line-height:20px;">
+        其他 ：</p>
+    <p>1. 如果抛出的异常一直没有函数捕获(catch)，则会一直上传到c++运行系统那里，导致整个程序的终止<br>
+        2. 一般在异常抛出后资源可以正常被释放，但注意如果在类的构造函数中抛出异常，系统是不会调用它的析构函数的，处理方法是：如果在构造函数中要抛出异常，则在抛出前要记得删除申请的资源。<br>
+        3. 异常处理仅仅通过类型而不是通过值来匹配的，所以catch块的参数可以没有参数名称，只需要参数类型。<br>
+        4. 函数原型中的异常说明要与实现中的异常说明一致，否则容易引起异常冲突。<br>
+        5. 应该在throw语句后写上异常对象时，throw先通过Copy构造函数构造一个新对象，再把该新对象传递给 catch. <br>
+        那么当异常抛出后新对象如何释放？<br>
+        异常处理机制保证：异常抛出的新对象并非创建在函数栈上，而是创建在专用的异常栈上，因此它才可以跨接多个函数而传递到上层，否则在栈清空的过程中就会被销毁。所有从try到throw语句之间构造起来的对象的析构函数将被自动调用。但如果一直上溯到main函数后还没有找到匹配的catch块，那么系统调用terminate()终止整个程序，这种情况下不能保证所有局部对象会被正确地销毁。<br>
+        6. catch块的参数推荐采用地址传递而不是值传递，不仅可以提高效率，还可以利用对象的多态性。另外，派生类的异常扑获要放到父类异常扑获的前面，否则，派生类的异常无法被扑获。<br>
+        7. 编写异常说明时，要确保派生类成员函数的异常说明和基类成员函数的异常说明一致，即派生类改写的虚函数的异常说明至少要和对应的基类虚函数的异常说明相同，甚至更加严格，更特殊。<br></p>
+    <p></p>
+    <p style="color:rgb(51,51,51);">来自《C++编程思想》和《More Effective C++》的建议：</p>
+    <p style="color:rgb(51,51,51);">1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不要使用异常的情形：</p>
+    <p style="color:rgb(51,51,51);">1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绝对不要在异步事件中使用异常。如使用了信号机制的系统、中断处理程序等。</p>
+    <p style="color:rgb(51,51,51);">2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不要在处理简单错误的时候使用异常。一般情况下，自己可以处理的错误就直接处理，只有当在此处处理不了的错误才抛出到更大的语境中。</p>
+    <p style="color:rgb(51,51,51);">3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不要将异常用于流程控制，比如代替switch语句。因为异常处理效率非常低，而且编译器会做出很多程序员不知道的事情。</p>
+    <p style="color:rgb(51,51,51);">4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;遇到不可恢复的错误时，最好不用处理异常，直接将异常交给操作系统处理即可。</p>
+    <p style="color:rgb(51,51,51);">2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;应该使用异常的情形：</p>
+    <p style="color:rgb(51,51,51);">
+        1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>遇到可以修正的错误，通过一些行为可以使程序继续执行</strong>；</p>
+    <p style="color:rgb(51,51,51);">2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在当前的语境中不能完全处理的错误，但有可能在较高层的语境中可以处理，这时，可以通过将一个同样类型或者不同类型的异常抛出；</p>
+    <p style="color:rgb(51,51,51);">3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>发生不足以让程序退出的错误，但是你认为该错误是致命错误的时候，可以通过抛出异常便于及时发现故障而终止程序</strong>；
+    </p>
+    <p style="color:rgb(51,51,51);">4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;为了简化错误处理。</p>
+    <p style="color:rgb(51,51,51);">&nbsp;</p>
+    <p style="color:rgb(51,51,51);">3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;对使用异常的建议(1,4,5,6见MoreEffectiveC++)：</p>
+    <p style="color:rgb(51,51,51);">1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;慎重使用异常规格说明：当不确定函数抛出何种异常时，最好不要使用异常规格说明。</p>
+    <p style="color:rgb(51,51,51);">2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;尽量使用标准异常库的异常类：编写自定义的异常类之前，先查看标准异常库。如果标准异常库没有需要的语义的异常，尽量从标准异常类派生出自定义的异常类。</p>
+    <p style="color:rgb(51,51,51);">3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;建立自己的异常类层次结构。</p>
+    <p style="color:rgb(51,51,51);">4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>尽量通过<span
+            style="color:#FF0000;">引用</span>来捕捉异常</strong>，原因有二：防止对象拷贝；防止对象slicing。异常对象由编译器统一管理，可以放心使用引用来操作。</p>
+    <p style="color:rgb(51,51,51);">5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可以在构造函数中抛出异常：如果构造函数发生故障而没有及时发现，程序继续运行会造成不可预料的灾难性结果，这种情况下可以在构造函数中抛出异常。</p>
+    <p style="color:rgb(51,51,51);">6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不要在析构函数中抛出异常。所以有时候需要在析构函数中处理异常。</p>
+    <pre class="cpp">#include &lt;iostream&gt;
+using namespace std;
+
+void func(int i)
+{
+    if (i&gt;100)
+    {
+        throw invalid_argument("invalid argument: argument can not be bigger than 100");
+    }
+    //do something...
+}
+
+int main()
+{
+    int i;
+    cout &lt;&lt; "Please input a number less than 100:" &lt;&lt; endl;
+    cin &gt;&gt; i;
+    try
+    {
+        func(i);
+    }
+    catch (logic_error&amp; e)  //caught by reference
+    {
+        cout &lt;&lt; "invalid input: " &lt;&lt; e.what() &lt;&lt; endl; //logic_error, can be handled, do not need to abort
+    }
+    catch (exception&amp;)
+    {
+        //do something…
+        throw;  //unknown exception caught, throw again
+    }
+    return 0;
+}</pre>
+    <h1 id="slide-12">C++的构造异常处</h1>
+    <p><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">在C++中，构造函数的异常一直是一个有争议的领域，至少在国内，中文论坛上是如此。很多人认为，构造函数应该是“无异常”的，从这种观念出发得出的一个结论是，构造函数应该是简单的，真正复杂的初始化，应该在另外一个扮演着构造函数，却不是构造函数的成员函数里进行。这通常被称为“二段构造”。并且，在二段构造之后，程序员有义务检查这个对象是否构造完成，比如通过对象提供的isOK()等成员函数检查对象的状态。</span><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;但实际上，C++的编程哲学是不鼓励乃至反对二段构造的,&nbsp;C++实际上提供了一套完整的机制来处理构造中的异常。</span><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;background-color:rgb(245,245,245);font-size:16px;"><span>对象的生命周期</span></span><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;要理解C++中的构造异常，我们首先要弄明白一个对象的生命周期。换言之，我们必须弄明白，在外部看来，一个对象从什么时候开始是存在的，之后又从什么时候开始是“不存在”的。似乎有点哲学味。不过答案其实很简单：</span><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(255,0,0);">对象的生命周期，从它的构造结束开始，至它的析构开始为止</span></span><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">。</span><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;换言之，只有构造函数执行完毕，这个对象才能被视为存在的；而从调用析构函数开始，这个对象就不存在了。</span><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;而所谓的“构造函数执行完毕”指的是没有产生异常的情况下，构造函数执行完毕。换言之，一旦构造函数中产生了异常，那么这个对象就是</span><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(255,0,0);">不存在</span></span><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">的。</span><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;“不存在”这点的确很令人疑惑，考虑下面的代码：</span><br>
+    </p>
+    <p></p>
+    <pre class="cpp">struct ExceptionObject
+{
+    int a;
+    ExceptionObject()
+    {
+        throw "an exception";
+    }
+};
+int foo()
+{
+    ExceptionObject* ptr = nullptr;
+    try
+    {
+        ptr = new ExceptionObject();
+    }
+    catch(...)
+    {
+        //delete or not delete ptr?
+    }
+}</pre>
+    <span style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">答案是不用delete。因为::new的工作是：</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;分配一块内存；</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;在这个内存上构造一个对象；</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;返回这个对象的地址。</span><br><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">在构造函数抛出异常的情况下，不存在这么一个对象，自然也就不需要delete。</span><br>
+    <p><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">不过你可能会说，::new不是已经分配了内存了么？那块内存怎么办？别担心，::new会代你处理好这些事情的，因为它也遵循c++的哲学</span><br>
+    </p>
+    <p><span
+            style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">那么，下面的代码呢？</span><br>
+    </p>
+    <p></p>
+    <pre class="cpp">struct ExceptionObject
+{
+    int a;
+    ExceptionObject()
+    {
+        throw "an exception";
+    }
+};
+int foo()
+{
+    try
+    {
+        ExceptionObject eObj;
+    }
+    catch(...)
+    {
+        //how?!
+    }
+}</pre>
+    <span style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">在上面这段代码中，很多人都会问，我如何处理这个异常？要回答这个问题，首先要理解，这个异常意味着什么？根据上面的总结，这个异常意味着“</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">这个对象不存在</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">”！于是，如何处理这个异常的答案也就很明显了，那就是：</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);"><span
+        style="font-size:24px;">什！么！也！不！做！</span></span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;没错，你没看错，就是什么也不做。因为这个对象不曾存在过，你能对这个对象做什么呢？实际上你也做不了什么。析构？别开玩笑了，去析构一个不存在的对象？</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;那难道不存在一个“构造了一半”的对象么？不存在，从外界看来，构造了一半的对象是不存在的。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;可是事实上，异常往往是在构造函数的半路抛出的，从构造函数的角度来看，这个时候，这个对象，的确是构造了一半的。如何处理这种情况，就是构造函数的责任了，这是接下来的章节的内容。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;background-color:rgb(245,245,245);font-size:16px;"><br><span>构造函数的结构</span></span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;在上面的章节中，我们已经知道，对一个对象的构造只有两种结果：成功或者不成功。可是构造总是有一个过程的，怎么让这个过程的结果只有两个：成功或者不成功呢？这就是构造函数的责任了。要了解构造函数如何履行这个责任的，我们首先要了解构造函数的结构。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;构造函数分两部分：</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.&nbsp;初始化；</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.&nbsp;构造函数体。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">这应该是一个基础知识。然而，值得注意，但却很少有人提到的是，分成两部分，意味着异常有两个来源。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;来源于初始化列表的异常和来源于构造函数体的异常是需要区别对待的。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;初始化列表中的异常是由基类的构造函数、成员的构造函数抛出的</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">构造异常</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">。而函数体中的异常不一定是构造异常。我们熟知如何捕捉函数体中的异常，然而初始化列表中的异常呢？我们来看下一节。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="font-size:16px;">function&nbsp;try&nbsp;block</span></span><br>
+    <pre class="cpp">struct Foo
+{
+    int a;
+    int b;
+
+    Foo()
+    try: a(0), b(0)
+    {
+    }
+    catch(...)
+    {
+        //...
+    }
+};</pre>
+    <span style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">瞧，try出现在构造函数的初始化列表之前，它的花括号直接变成了函数的花括号，本该出现在函数体之内的catch变成了函数之后的一部分。这就是c++异常处理机制中很少被提及，但其实对构造异常而言异常重要的一种语法：</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br><span>function-try-block</span></span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;关于try-function-block还有一点必须提及的是，它的catch部分</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">必须抛出异常</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">。这点和其他的try-catch是截然不同的。这是为了保证构造异常的传导，在后续的章节中会详细说明。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="font-size:16px;">构造函数的异常处理</span></span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;到目前为止，我们已经了解了构造函数的职责、它的结构、可能的异常来源和如何捕捉这些异常。接下来，我们可以看看如何处理这些异常了。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;首先是初始化列表的异常。</span><br>
+    <pre class="cpp">struct Foo
+{};
+
+struct Bar: Foo
+{
+    int _a;
+    Bar()
+    try: Foo(), _a(0)
+    {
+    }
+    catch(...)
+    {
+    }
+};</pre>
+    <span style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">“初始化列表的异常意味着什么？”一而再再而三地问这些为什么，别嫌烦，因为这的确很重要。这意味着，</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">这个对象构造的基础不存在</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">所以，在catch部分，你能做的唯一事情，实际上就是抛出一个“老子不存在”的异常。不要试图做什么回滚之类的“挽救工作”，因为在这个catch里，你是找不到this这个参数的，也就是说，</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">没有这个对象</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">的。如果你不抛异常呢？c++会代你抛的，因为这个对象的基础不存在，接下来的构造函数体是不应该被执行的，所以，在try-function-block中，只要catch了，无论如何都会有个异常被抛出来。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;c++的异常机制保证了在异常抛出前构造的部分——基类、成员等等都能够被正确的析构。等等，那抛出异常的那家伙呢？——问那家伙的构造函数去。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;不过，c++里面的一个原则是，try中手动分配的资源，要在catch中回收。但对于try-function-block，这是做不到的：</span><br>
+    <pre class="cpp">struct A
+{
+    int* intPtr;
+    ExceptionStruct es;
+    A()
+    try: intPtr(new int(4)), es()
+    {
+    }
+    catch(...)
+    {
+        delete intPtr;//error, you can not reference to "this" in this catch
+    }
+    ~A()
+    {
+        delete intPtr;
+    }
+};</pre>
+    <span style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">@</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;int*是一个指针，指针是没有析构函数的。而c++的异常机制保证的是正确构造的对象的析构函数会被调用。在上面的场景中，是成员的析构函数将被调用，而不是类本身，所以就出现了资源泄露。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;因此，在初始化列表中，不要分配需要手工回收的资源。而是尽量使用RAII这种方式。比如上面的int*&nbsp;换成std::unique_ptr&lt;int&gt;就没有这个问题了。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;好了，那么接下来构造函数体中的异常处理也很直观了：能挽救的挽救，不能挽救，那就抛“老子不存在”的异常吧。别担心，你在抛异常之前只需要处理你在函数体中分配的那些需要手动管理资源，（包含但不限于new&nbsp;出来的东西）。剩下的成员什么的，不是已经在初始化列表中正常构造了么？所以也会被正常析构的。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;background-color:rgb(245,245,245);font-size:16px;"><span>关于“二段构造”</span></span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;接着谈谈常见的“二段构造”这种方式。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;“二段构造”这种写法，实际上暗示了这个对象的内容可以分两部分：1)在“无异常”构造函数中构造的那部分，是</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">必须的</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">；2)在init函数里初始化的那部分，是</span><span
+        style="font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);color:rgb(255,0,0);">可选的</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;可是实际上第二部分往往也是必须的，于是，如果&nbsp;false&nbsp;==&nbsp;obj.isOK()，那剩下的工作和异常处理也没啥两样了。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;大多数人使用二段构造的初衷是希望手动控制对象内部的资源管理，可这实际上是脱了裤子放屁，c++的构造异常机制已经保证了异常之前的所有自动控制的资源都会被正确回收，程序员只需要回收异常发生时，那些已经分配了的，需要手动回收的资源。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="font-size:16px;">构造异常处理的一些原则</span></span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;到这里，构造函数异常处理就已经介绍完了。总结一下：</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.&nbsp;一个对象只有两个状态，存在或者不存在，构造函数成功，存在；异常，不存在。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.&nbsp;当构造异常发生时，c++的异常机制保证了类的那些没有异常的成员都会被逐级析构，自然资源也会被逐级回收。而程序员则有义务保证在抛出构造异常前，清理代码中已经分配的需要手动管理的资源。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.&nbsp;不要在初始化列表中分配需要手动管理的资源，因为你没有任何方法来回收这些资源。</span><br
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);"><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.&nbsp;出于保护手动资源而采取的二段构造策略是多余的，只要用好C++的构造异常机制，所有的资源都可以在异常时被自动回收，不需要人工的干预。</span><span
+        style="color:rgb(51,51,51);font-family:Helvetica, Tahoma, Arial, sans-serif;font-size:14px;background-color:rgb(245,245,245);">不算复杂吧？</span><br>
+    <h1 id="slide-13">19个C++异常处理中的常见问题</h1>
+    <p></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"
+       data-spm-anchor-id="a2c6h.12873639.0.i4.2f2f322cnADOGu"><strong>1. throw可以抛出哪些种类的异常对象？如何捕获？</strong><br>
+        1）异常对象通常是一个class对象， 通常用以下代码抛出：<br>
+        // 调用的类的构造函数<br>
+        throw popOnEmpty();<br>
+        但是throw 表达式也可以抛出任何类型的对象, 例如(虽然很不常见)在下面的代码例子中，函数mathFunc()抛出一个枚举类型的异常对象<br>
+        enum EHstate { noErr, zeroOp, negativeOp, severeError };<br>
+        int mathFunc( int i )<br>
+        {<br>
+        &nbsp; &nbsp; if ( i == 0 )<br>
+        &nbsp; &nbsp; throw zeroOp; // 枚举类型的异常<br>
+        }<br>
+        2）抛出异常的语句或其调用函数要在try块中才能被捕获。<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>2. catch子句的语法</strong><br>
+        一个catch 子句由三部分构成：<br>
+        1）关键字catch<br>
+        2）异常声明，在括号中的单个类型或单个对象声明（被称作异常声明，exception declaration）<br>
+        3）复合语句中的一组语句。<br>
+        // stackExcp.h<br>
+        class popOnEmpty { };<br>
+        class popOnFull { };<br>
+        catch ( pushOnFull )<br>
+        {<br>
+        &nbsp; &nbsp; cerr &lt;&lt; "trying to push a value on a full stack\n";<br>
+        &nbsp; &nbsp; return errorCode88;<br>
+        }<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>3. 异常声明可以只是一个类型声明而不是对象声明吗？</strong><br>
+        catch 子句的异常声明可以是一个类型声明或一个对象声明。当我们要获得throw 表达式的值或者要操纵throw 表达式所创建的异常对象时，我们应该声明一个对象。<br>
+        catch ( pushOnFull eObj )<br>
+        {<br>
+        &nbsp; &nbsp; cerr &lt;&lt; "trying to push the value " &lt;&lt; eObj.value() &lt;&lt; " on a full stack\n";<br>
+        }<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>4. 异常声明中异常对象的拷贝过程？</strong><br>
+        catch 子句异常声明的行为特别像参数声明。同理，也可以分出按值传递和引用传递（指针）。通常采用的是引用传递。<br>
+        例1：按值传递。当进入catch 子句时，如果异常声明声明了一个对象，则用该异常对象的拷贝初始化这个对象。例中对象eObj 是用异常对象的值来初始化的，会调用拷贝构造函数。<br>
+        void calculate( int op ) {<br>
+        &nbsp;try {<br>
+        &nbsp; mathFunc( op );<br>
+        &nbsp;}<br>
+        &nbsp;catch (pushOnFull eObj ) {<br>
+        &nbsp; // eObj 是被抛出的异常对象的拷贝<br>
+        &nbsp;}<br>
+        }<br>
+        例2：引用传递。catch子句可以直接引用由throw 表达式创建的异常对象，而不是创建一个局部拷贝。可以防止不必要地拷贝大型类对象。<br>
+        void calculate( int op ) {<br>
+        &nbsp;try {<br>
+        &nbsp; mathFunc( op );<br>
+        &nbsp;}<br>
+        &nbsp;catch (pushOnFull &amp;eObj ) {<br>
+        &nbsp; // eObj 引用了被抛出的异常对象<br>
+        &nbsp;}<br>
+        }<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>5. 异常处理的栈展开过程是什么？</strong><br>
+        在查找用来处理被抛出异常的catch 子句时，因为异常而退出复合语句和函数定义，这个过程被称作栈展开(stack
+        unwinding)。随着栈的展开，在退出的复合语句和函数定义中声明的局部变量的生命期也结束了。C++保证，随着栈的展开，尽管局部类对象的生命期是因为抛出异常而被结束，但是这些局部类对象的析构函数也会被调用。<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>6.
+        异常抛出没有在try块中或抛出的异常没有对应的catch语句来捕捉，结果如何？</strong><br>
+        异常不能够保持在未被处理的状态，异常对于一个程序非常重要，它表示程序不能够继续正常执行。如果没有找到处理代码，程序就调用C++标准库中定义的函数terminate()。terminate()的缺省行为是调用abort()
+        ，指示从程序非正常退出。<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>7.为什么要重新抛出异常？怎么写？</strong><br>
+        在异常处理过程中也可能存在“单个catch 子句不能完全处理异常”的情况。在对异常对象进行修改或增加某些信息之后，catch 子句可能决定该异常必须由函数调用链中更上级的函数来处理。表达式的形式为：throw;<br>
+        例子如下：<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; try<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; {<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; entryDescr-&gt;checkMandatoryData(beModel_);<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; }<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; catch (CatchableOAMexception &amp; error) // 只能用引用声明<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; {<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; vector&lt;string&gt; paramList;<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; paramList.push_back(currentDn);<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; error.addFrameToEnd(6,paramList); &nbsp;// 修改异常对象<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; throw; &nbsp;//重新抛出异常, 并由另一个catch 子句来处理<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; }<br>
+        注意1：被重新抛出的异常就是原来的异常对象，所以异常声明一定要用引用。<br>
+        注意2：在catch 语句里也可以抛出其它<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>8. 怎么捕捉全部异常或未知异常</strong>？<br>
+        可以用catch ( ... ) { } 。<br>
+        作用在于：1. 可以释放在前面获得的资源(如动态内存)，因为异常退出，这些资源为释放。2. 捕获其余类型的未知异常。<br>
+        catch 子句被检查的顺序与它们在try 块之后出现的顺序相同。一旦找到了一个匹配，则后续的catch 子句将不再检查。这意味着如果catch(...)与其他catch
+        子句联合使用，它必须总是被放在异常处理代码表的最后，否则就会产生一个编译时刻错误。例子如下：<br>
+        catch ( pushOnFull ) {}<br>
+        catch ( popOnEmpty ) { }<br>
+        catch (...) { } // 必须是最后一个catch 子句<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>9. 为什么 catch 子句的异常声明通常被声明为引用？</strong><br>
+        1）可以避免由异常对象到 catch 子句中的对象的拷贝，特别是对象比较大时。<br>
+        2）能确保catch子句对异常对象的修改能再次抛出。<br>
+        3）确保能正确地调用与异常类型相关联的虚拟函数，避免对象切割。<br>
+        具体参见4，7，17。<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>10. 异常对象的生命周期？</strong><br>
+        产生：throw className()时产生。<br>
+        销毁：该异常的最后一个catch 子句退出时销毁<br>
+        注意：因为异常可能在catch子句中被重新抛出，所以在到达最后一个处理该异常的catch 子句之前，异常对象是不能被销毁的<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>11. const char *到char * 非法的异常类型转换。</strong><br>
+        我们注意到下面的代码在VC中可以正常运行（gcc不能）。<br>
+        try { throw "exception";}<br>
+        catch (char *) {cout &lt;&lt; "exception catch!" &lt;&lt;endl;}<br>
+        实际上throw的是一个const char *, catch的时候转型成char *。这是C++对C的向下兼容。<br>
+        同样的问题存在于：<br>
+        1. char *p = &nbsp;“test”; // 也是一个const char * 到char *转型。<br>
+        2. void func(char* p) { printf("%s\n", p); }<br>
+        &nbsp; &nbsp; func("abc"); // const char * 到char *<br>
+        以上两例在编译时不警告，运行时不出错，是存在隐患的。<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>12. 异常规范（exception
+        specification）的概念？</strong><br>
+        异常规范在函数声明是规定了函数可以抛出且只能抛出哪些异常。空的异常规范保证函数不会抛出任何异常。如果一个函数声明没有指定异常规范，则该函数可以抛出任何类型的异常。<br>
+        例1：函数Pop若有异常，只能抛出popOnEmpty和string类型的异常对象<br>
+        void pop( int &amp;value ) throw(popOnEmpty, string);<br>
+        例2：函数no_problem()保证不会抛出任何异常<br>
+        extern void no_problem() throw();<br>
+        例3：函数problem()可以抛出任何类型的异常<br>
+        extern void problem();<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>13. 函数指针的异常规范？</strong><br>
+        我们也可以在函数指针的声明处给出一个异常规范。例如：<br>
+        void (*pf) (int) throw(string);<br>
+        当带有异常规范的函数指针被初始化或被赋值时，用作初始值或右值的指针异常规范必须与被初始化或赋值的指针异常规范一样或更严格。例如：<br>
+        void recoup( int, int ) throw(exceptionType);<br>
+        void no_problem() throw();<br>
+        void doit( int, int ) throw(string, exceptionType);<br>
+        // ok: recoup() 与 pf1 的异常规范一样严格<br>
+        void (*pf1)( int, int ) throw(exceptionType) = &amp;recoup;<br>
+        // ok: no_problem() 比 pf2 更严格<br>
+        void (*pf2)() throw(string) = &amp;no_problem;<br>
+        // 错误: doit()没有 pf3 严格<br>
+        void (*pf3)( int, int ) throw(string) = &amp;doit;<br>
+        注：规则的执行和编译器有关。在VC和gcc上<a target="_blank" href="http://lib.csdn.net/base/softwaretest" class="replace_word"
+                                 title="软件测试知识库"
+                                 style="color:rgb(223,52,52);text-decoration:none;font-weight:bold;">测试</a>失败。<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; vc中提示： warning C4290: C++ exception specification ignored except to indicate a
+        function is not __declspec(nothrow)<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>14. 派生类中虚函数的异常规范的声明？</strong><br>
+        基类中虚拟函数的异常规范，可以与派生类改写的成员函数的异常规范不同。但是派生类虚拟函数的异常规范必须与基类虚拟函数的异常规范一样或者更严格。<br>
+        class Base {<br>
+        public:<br>
+        &nbsp; virtual double f1( double ) throw ();<br>
+        &nbsp; virtual int f2( int ) throw ( int );<br>
+        &nbsp; virtual string f3( ) throw ( int, string );<br>
+        &nbsp; // ...<br>
+        };<br>
+        class Derived : public Base {<br>
+        public:<br>
+        &nbsp; // error: 异常规范没有 base::f1() 的严格<br>
+        &nbsp; double f1( double ) throw ( string );<br>
+        &nbsp; // ok: 与 base::f2() 相同的异常规范<br>
+        &nbsp; int f2( int ) throw ( int );<br>
+        &nbsp; // ok: 派生 f3() 更严格<br>
+        &nbsp; string f3( ) throw ( int );<br>
+        &nbsp; // ...<br>
+        };<br>
+        注：和编译器有关。VC下测试结果只有如下warning：<br>
+        warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)<br>
+    </p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>15.
+        被抛出的异常的类型和异常规范中指定的类型能进行类型转换吗？</strong><br>
+        int convert( int parm ) throw(string)<br>
+        {<br>
+        &nbsp; if ( somethingRather )<br>
+        &nbsp; // 程序错误:<br>
+        &nbsp; // convert() 不允许 const char* 型的异常<br>
+        &nbsp; throw "help!";<br>
+        }<br>
+        throw 表达式抛出一个C 风格的字符串，由这个throw 表达式创建的异常对象的类型为const char*。通常，const char*型的表达式可以被转换成string
+        类型。但是，异常规范不允许从被抛出的异常类型到异常规范指定的类型之问的转换。<br>
+        Note：VC下，编译能通过。只有warning C4290: C++ exception specification ignored except to indicate a function is not
+        __declspec(nothrow)<br><br><br>
+        注意：<br>
+        当异常规范指定一个类类型（类类型的指针）时，如果一个异常规范指定了一个类，则该函数可以抛出“从该类公有派生的类类型”的异常对象。类指针同理。<br>
+        例如：<br>
+        class popOnEmpty : public stackExcp { };<br>
+        void stackManip() throw( stackExcp ) &nbsp;// 异常规范是stackExcp类型<br>
+        {<br>
+        &nbsp; &nbsp; throw stackExcp(); &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;// 与异常规范一样<br>
+        &nbsp; &nbsp; throw popOnEmpty (); &nbsp; &nbsp; &nbsp;// ok. 是stackExcp的派生类<br>
+        }<br>
+        Note：VC下，编译能通过。只有warning C4290: C++ exception specification ignored except to indicate a function is not
+        __declspec(nothrow)<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>16.
+        公有基类的catch子句可以捕捉到其派生类的异常对象。</strong><br>
+        int main( ) {</p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;">&nbsp;&nbsp;try {</p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;">&nbsp; &nbsp; // 抛出pushOnFull异常<br>
+        &nbsp; }<br>
+        &nbsp; catch ( Excp&amp; ) {<br>
+        &nbsp; &nbsp; // 处理 popOnEmpty 和 pushOnFull 异常<br>
+        &nbsp; &nbsp; throw;<br>
+        &nbsp; }<br>
+        &nbsp; catch ( pushOnFull&amp; ) {<br>
+        &nbsp; &nbsp; // 处理 pushOnFull 异常<br>
+        &nbsp; }<br>
+        }<br>
+        在上例中，进入catch ( Excp )子句，重新抛出的异常任然是pushOnFull类型的异常对象，而不会是其基类对象Excp。<br></p>
+    <p style="color:rgb(54,46,43);font-family:Arial;font-size:14px;"><strong>17. 异常对象中怎么运用虚拟函数来完成多态？</strong><br>
+        1）异常申明是对象（不是引用或指针），类似于普通的函数调用，发生对象切割。<br>
+        // 定义了虚拟函数的新类定义<br>
+        class Excp {<br>
+        public:<br>
+        &nbsp; virtual void print() {<br>
+        &nbsp; &nbsp; cerr &lt;&lt; "An exception has occurred"<br>
+        &nbsp; &nbsp; &lt;&lt; endl;<br>
+        &nbsp; }<br>
+        };<br>
+        class stackExcp : public Excp { };<br>
+        class pushOnFull : public stackExcp {<br>
+        public:<br>
+        &nbsp; virtual void print() {<br>
+        &nbsp; &nbsp; cerr &lt;&lt; "trying to push the value " &lt;&lt; _value<br>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&lt;&lt; " on a full stack\n";<br>
+        &nbsp; }<br>
+        &nbsp; // ...<br>
+        };<br>
+        int main( ) {<br>
+        &nbsp; try {<br>
+        &nbsp; &nbsp; // iStack::push() throws a pushOnFull exception<br>
+        &nbsp; } catch ( Excp eObj ) {<br>
+        &nbsp; &nbsp; eobj.print(); // 调用虚拟函数<br>
+        &nbsp; &nbsp; // 喔! 调用基类实例<br>
+        &nbsp; }<br>
+        }<br>
+        对象切割过程：eObj 以“异常对象的基类子对象Excp 的一个拷贝”作为初始值，eobj 是Excp 类型的对象，而不是pushOnFull 类型的对象。<br>
+        输出结果：<br>
+        An exception has occurred<br>
+        2）异常声明是一个指针或引用<br>
+        int main( ) {<br>
+        &nbsp; try {<br>
+        &nbsp; &nbsp; // iStack::push() 抛出一个 pushOnFull 异常<br>
+        &nbsp; }<br>
+        &nbsp; catch ( Excp &amp;eObj ) {<br>
+        &nbsp; &nbsp; eobj.print(); // 调用虚拟函数 pushOnFull::print()<br>
+        &nbsp; }<br>
+        }<br>
+        输出结果：<br>
+        trying to push the value 879 on a full stack</p>
+    <p data-spm-anchor-id="a2c6h.12873639.0.i5.2f2f322cnADOGu"><br></p>
+    <p><br></p>
+
+</div>
+</body>
+</html>

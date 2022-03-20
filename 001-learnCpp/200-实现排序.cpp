@@ -50,5 +50,10 @@ int main() {
     shuffle(a.begin(), a.end(), g);
     qsort(a.data(), a.size(), sizeof a[0], cmp);
     show(a);
+    shuffle(a.begin(), a.end(), g);
+    sort(a.begin(), a.end(), [](const Node &x, const Node &b) {
+        return x.x < b.x;
+    });
+    show(a);
     return 0;
 }
