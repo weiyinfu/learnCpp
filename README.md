@@ -5,7 +5,9 @@
 * cppreference:
 https://zh.cppreference.com/w/
 * C语言中文网：http://c.biancheng.net/cpp/biancheng/cpp/rumen_1/
-* 微软文档：https://docs.microsoft.com/zh-cn/cpp/cpp/errors-and-exception-handling-modern-cpp?view=msvc-170
+* 微软文档：
+  * https://docs.microsoft.com/zh-cn/cpp/cpp/errors-and-exception-handling-modern-cpp?view=msvc-170
+  * https://docs.microsoft.com/zh-cn/cpp/c-language/c-language-reference?view=msvc-170
 * learn Cpp:一个英文教程，https://www.learncpp.com/cpp-tutorial/introduction-to-these-tutorials/
 * awesome cpp：https://github.com/fffaraz/awesome-cpp
 

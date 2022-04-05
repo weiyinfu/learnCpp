@@ -51,6 +51,9 @@ add_executable(target159dac1fa28413cf0c7788c5cd7ce508 176-成员访问运算符.
 add_executable(targetdfdad0241e75d131e15b4b4e1aec57dd 160-类的运算符重载.cpp)
     
 
+add_executable(target1e4d7636adcb59b0caa263d529a7f598 041-sizeof&strlen.cpp)
+    
+
 add_executable(targetf05e6052c85d310d2c0cf5bd40c481b0 05-右值引用.cpp)
     
 
@@ -175,6 +178,9 @@ add_executable(target7c5cc75dc5508dc8e642ded3ed8af604 116-new长度为0的数组
     
 
 add_executable(targetb06af4bf425d88b579e295f06a352e6c 180-多态2.cpp)
+    
+
+add_executable(target11398ea2e67db137a9eb39bda8183a69 132-concurrentQueue.cpp)
     
 
 add_executable(targetb81b4e799c75f4b0ace5270dcf5ac149 040-map.cpp)
