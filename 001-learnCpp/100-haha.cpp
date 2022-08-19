@@ -6,11 +6,18 @@
 #include <fstream>
 #include <cassert>
 #include <functional>
+
 using namespace std;
-int main()
-{
-  cout << "hello world" << endl;
-  vector<int> *vec = new vector<int>();
-  unique_ptr<vector<int>> x(vec);
-  return 0;
+
+typedef struct haha *hahaHandle;
+class haha{
+    int x=3;
+};
+int main() {
+    cout << "hello world" << endl;
+    vector<int> *vec = new vector<int>();
+    unique_ptr<vector<int>> x(vec);
+    cout << sizeof(size_t) << endl;
+    haha h;
+    return 0;
 }

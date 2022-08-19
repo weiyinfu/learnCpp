@@ -1,0 +1,6 @@
+message User{
+  required string Id =1;
+  required string DisplayName=2;
+  required int32 Age=3;
+  optional string Address=4;
+}

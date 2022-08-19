@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(learnCpp)
 
 set(CMAKE_CXX_STANDARD 14)
-
-add_subdirectory(001-learnCpp)
-add_subdirectory(016-学习boost)
-add_subdirectory(030-http)
-add_subdirectory(100-openssl)
+set(CONAN_DISABLE_CHECK_COMPILER 1)
+include(build/conanbuildinfo.cmake)
+conan_basic_setup()
+include(gen.cmake)

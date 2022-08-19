@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.21)
+project(thriftcpp)
+set(CMAKE_CXX_STANDARD 14)
+
+set(CMAKE_CXX_STANDARD 14)
+#find_package(Thrift CONFIG REQUIRED)
+include_directories(gen-cpp /Users/bytedance/Desktop/pico/jniDemo/thriftcpp/vcpkg-export-20220310-224245/installed/x64-osx/include)
+link_directories( /Users/bytedance/Desktop/pico/jniDemo/thriftcpp/vcpkg-export-20220310-224245/installed/x64-osx/lib)
+add_executable(hahaServer Haha_server.cpp gen-cpp/Haha.cpp gen-cpp/main_constants.cpp gen-cpp/main_types.cpp)
+add_executable(hahaClient Haha_client.cpp gen-cpp/Haha.cpp gen-cpp/main_constants.cpp gen-cpp/main_types.cpp)
+target_link_libraries(hahaServer PRIVATE thrift thriftnb thriftz)
+target_link_libraries(hahaClient PRIVATE thrift thriftnb thriftz)
+

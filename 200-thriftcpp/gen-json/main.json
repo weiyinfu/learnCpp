@@ -1,0 +1,59 @@
+{
+  "name": "main",
+  "namespaces": {
+
+  },
+  "includes": [
+  ],
+  "enums": [
+  ],
+  "typedefs": [
+  ],
+  "structs": [
+  ],
+  "constants": [
+  ],
+  "services": [
+    {
+      "name": "Haha",
+      "functions": [
+        {
+          "name": "haha",
+          "returnTypeId": "string",
+          "oneway": false,
+          "arguments": [
+            {
+              "key": -1,
+              "name": "s",
+              "typeId": "string",
+              "required": "req_out"
+            }
+          ],
+          "exceptions": [
+          ]
+        },
+        {
+          "name": "baga",
+          "returnTypeId": "i32",
+          "oneway": false,
+          "arguments": [
+            {
+              "key": -1,
+              "name": "one",
+              "typeId": "i32",
+              "required": "req_out"
+            },
+            {
+              "key": -2,
+              "name": "two",
+              "typeId": "i32",
+              "required": "req_out"
+            }
+          ],
+          "exceptions": [
+          ]
+        }
+      ]
+    }
+  ]
+}
