@@ -11,4 +11,23 @@ __pycache__/
 node_modules/
 *.so
 
-util
+build/
+cmake-build-debug
+
+dependency/
+target/
+demo/**/*.so
+demo/**/*.out
+!.gitkeep
+__pycache__
+aws_sdk*.log
+lib
+a.out
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+CMakeFiles
+cmake-build-debug
+.idea/
+*.iml
+*.cbp

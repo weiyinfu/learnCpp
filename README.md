@@ -19,3 +19,19 @@ https://github.com/yhirose/cpp-httplib
 # C++与python交互相关资料
 https://github.com/weiyinfu/learnCython
 https://github.com/weiyinfu/learnCtypes
+
+
+# 常用库
+* SPTAG
+* pybind11
+* aws-sdk
+* boost
+* boost-log
+* boost-process
+* cjson
+* eigen
+* json
+* msgpack
+* numcpp
+* opencv
+* pybind11
