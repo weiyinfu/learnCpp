@@ -1,0 +1,27 @@
+[general]
+language = "zh"                                   #语言
+host = "https://platform-cn.picovr.com"             #pico平台后端地址
+#app_id = 11111111111111111111111111111111        #appid, 默认不需要此字段, 除非想要强行替换为特定appid
+#matrix_app_id = 222222                           #matrix_app_id, 默认不需要此字段, 除非想要更换
+oauth_host = "https://matrix-cn.picovr.com"         #鉴权后端地址
+
+[account]
+#从开发者管理平台获取的AccessToken
+access_token = "act.33333333333333333333333333333333333333333333333333333333333"
+
+[package]
+package_name = "com.bytedance.gameplus"               #包名
+package_version_code = 1                              #包版本号
+package_version_name = "my_package_version_name"        #包版本名
+
+#从ppf_ApplicationLifecycle_GetLaunchDetails接口获取的launch detail信息
+[launch_detail]
+deeplink_message = "my_deeplink_message"
+destination_api_name = "my_destination_api_name"
+launch_source = "my_launch_source"
+lobby_session_id = "my_lobby_session_id"
+match_session_id = "my_match_session_id"
+extra = "my_extra"
+room_id = 111
+tracking_id = "my_tracking_id"
+launch_type = 1

@@ -5,10 +5,11 @@ thrift/0.15.0
 openssl/1.1.1l
 boost/1.78.0
 nlohmann_json/3.11.2
-protobuf/3.21.4
+protobuf/3.13.0
 zlib/1.2.12
 cpp-httplib/0.11.1
 eigen/3.4.0
-aws-sdk-cpp/1.9.234
+msgpack/3.3.0
+toml11/3.7.1
 [generators]
 cmake

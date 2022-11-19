@@ -19,5 +19,8 @@ int main() {
     unique_ptr<vector<int>> x(vec);
     cout << sizeof(size_t) << endl;
     haha h;
+
+    unsigned  long long x=-1;
+    printf("%llu",x);
     return 0;
 }

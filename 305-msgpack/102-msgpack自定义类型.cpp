@@ -27,16 +27,10 @@ int main(int argc, char **argv) {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, f);
 
-    msgpack::unpacked unpack;
-    msgpack::unpack(&unpack, sbuf.data(), sbuf.size());
-
-    msgpack::object obj = unpack.get();
-
-    Foo f2;
-    obj.convert(&f2);
-
+    auto obj = msgpack::unpack(sbuf.data(), sbuf.size());
+    Foo f2 = obj->convert();
     cout << f2.i << ", " << f2.str << ", ";
     cout << f2.data.ptr << endl;
-
+    cout << obj.get();
     return 0;
 }

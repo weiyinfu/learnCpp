@@ -1,10 +1,4 @@
 
-cmake_minimum_required(VERSION 3.21)
-project(learnBoost)
-
-set(CMAKE_CXX_STANDARD 14)
-
-
 add_executable(target4ab31089ddc5495cce8e9db613fec2bd 001-learnCpp/149-future.cpp)
 target_link_libraries(target4ab31089ddc5495cce8e9db613fec2bd  ${CONAN_LIBS})
 
@@ -29,8 +23,17 @@ target_link_libraries(target93a2b8837ee7fca209e2d6ea33b88c0c  ${CONAN_LIBS})
 add_executable(target202d6edc88731cc73a2734f66497a2c2 001-learnCpp/041-sizeof&strlen.cpp)
 target_link_libraries(target202d6edc88731cc73a2734f66497a2c2  ${CONAN_LIBS})
 
+add_executable(targetce6d1300dc6c483497f8347b2ac37e48 001-learnCpp/010-宽字符.cpp)
+target_link_libraries(targetce6d1300dc6c483497f8347b2ac37e48  ${CONAN_LIBS})
+
 add_executable(targetc5a3222b49466d7036cc9d37d967a6c7 001-learnCpp/05-右值引用.cpp)
 target_link_libraries(targetc5a3222b49466d7036cc9d37d967a6c7  ${CONAN_LIBS})
+
+add_executable(targetbf81a1c0262f10918f296664779367f8 001-learnCpp/025-读取流的全部内容.cpp)
+target_link_libraries(targetbf81a1c0262f10918f296664779367f8  ${CONAN_LIBS})
+
+add_executable(target4a5eb5e38e38722b04ca3106aada91f3 001-learnCpp/500-正则表达式.cpp)
+target_link_libraries(target4a5eb5e38e38722b04ca3106aada91f3  ${CONAN_LIBS})
 
 add_executable(targetbe55c4cd36c168e32c34bcfc9fb860ff 001-learnCpp/101-二分法.cpp)
 target_link_libraries(targetbe55c4cd36c168e32c34bcfc9fb860ff  ${CONAN_LIBS})
@@ -56,8 +59,14 @@ target_link_libraries(target9173cb9f704f26b5738729af8f72eaab  ${CONAN_LIBS})
 add_executable(target82ceda637e0e97d0a97321102fad87a1 001-learnCpp/325-预定义宏.cpp)
 target_link_libraries(target82ceda637e0e97d0a97321102fad87a1  ${CONAN_LIBS})
 
+add_executable(targetb7bea59f2f172c4cd2dcd8d391fd972a 001-learnCpp/017-测试闭包.cpp)
+target_link_libraries(targetb7bea59f2f172c4cd2dcd8d391fd972a  ${CONAN_LIBS})
+
 add_executable(target2f4195c220cc1d7d2337aff001e977c7 001-learnCpp/03-随意跳转3.cpp)
 target_link_libraries(target2f4195c220cc1d7d2337aff001e977c7  ${CONAN_LIBS})
+
+add_executable(target8a5db38b5614d6cc14a6b560fdb4744c 001-learnCpp/005-测试时间.cpp)
+target_link_libraries(target8a5db38b5614d6cc14a6b560fdb4744c  ${CONAN_LIBS})
 
 add_executable(target5bb294e6c1e8f6d7c2ed61fcda5e2b2a 001-learnCpp/403-变参模板2.cpp)
 target_link_libraries(target5bb294e6c1e8f6d7c2ed61fcda5e2b2a  ${CONAN_LIBS})
@@ -77,6 +86,12 @@ target_link_libraries(target04ee7a9f5e0a5f12a539840999ea89a7  ${CONAN_LIBS})
 add_executable(target0e4f20cc1ca9fa4ff79bd02980ed775f 001-learnCpp/20-new和delete是operator.cpp)
 target_link_libraries(target0e4f20cc1ca9fa4ff79bd02980ed775f  ${CONAN_LIBS})
 
+add_executable(target9d1340bc3c815331dfb54ba596d10562 001-learnCpp/035-使用array.cpp)
+target_link_libraries(target9d1340bc3c815331dfb54ba596d10562  ${CONAN_LIBS})
+
+add_executable(target9047a2fc4d9d44cb6a2297f7652bdfec 001-learnCpp/020-and逻辑运算符.cpp)
+target_link_libraries(target9047a2fc4d9d44cb6a2297f7652bdfec  ${CONAN_LIBS})
+
 add_executable(target8939769ecc22b6cce92bd3f4004a1e79 001-learnCpp/02-随意跳转2.cpp)
 target_link_libraries(target8939769ecc22b6cce92bd3f4004a1e79  ${CONAN_LIBS})
 
@@ -85,6 +100,9 @@ target_link_libraries(target1e63f2aa3f869e4d90d27370c2ac8c87  ${CONAN_LIBS})
 
 add_executable(target14da52fd83bec99cffe6fcffe3564499 001-learnCpp/400-c语言变参数.cpp)
 target_link_libraries(target14da52fd83bec99cffe6fcffe3564499  ${CONAN_LIBS})
+
+add_executable(target48709a1c0973652e0761ef6915c68bb9 001-learnCpp/009-测试换行.cpp)
+target_link_libraries(target48709a1c0973652e0761ef6915c68bb9  ${CONAN_LIBS})
 
 add_executable(target51a39f9e3a207727d661f32bb021a4eb 001-learnCpp/103-int8.cpp)
 target_link_libraries(target51a39f9e3a207727d661f32bb021a4eb  ${CONAN_LIBS})
@@ -97,6 +115,9 @@ target_link_libraries(target4bd2119188eea86994d27c57ac02bccd  ${CONAN_LIBS})
 
 add_executable(target27025a90913eb0dd1f6afc535cf948dc 001-learnCpp/133-isValidId.cpp)
 target_link_libraries(target27025a90913eb0dd1f6afc535cf948dc  ${CONAN_LIBS})
+
+add_executable(target8b93c9e80bae970006cd612fef6d4b65 001-learnCpp/030-str.data.cpp)
+target_link_libraries(target8b93c9e80bae970006cd612fef6d4b65  ${CONAN_LIBS})
 
 add_executable(targete20478b32a38912f6ef32d99accb8fb5 001-learnCpp/95-内存管理/102-析构函数的时机.cpp)
 target_link_libraries(targete20478b32a38912f6ef32d99accb8fb5  ${CONAN_LIBS})
@@ -139,6 +160,9 @@ target_link_libraries(target6ccf467e53985699d1b6c52272ece66f  ${CONAN_LIBS})
 
 add_executable(targete6b37d5cde17ae24a41de6d18a72aefa 001-learnCpp/10-多线程/148-threadlocal与析构函数.cpp)
 target_link_libraries(targete6b37d5cde17ae24a41de6d18a72aefa  ${CONAN_LIBS})
+
+add_executable(targetb3b33864df3504bfb0c7fb7fd3112f0e 001-learnCpp/10-多线程/331-automic_flag.cpp)
+target_link_libraries(targetb3b33864df3504bfb0c7fb7fd3112f0e  ${CONAN_LIBS})
 
 add_executable(target40eec4f68a64e35a96353b656edaad20 001-learnCpp/10-多线程/149-packaged_task.cpp)
 target_link_libraries(target40eec4f68a64e35a96353b656edaad20  ${CONAN_LIBS})
@@ -185,6 +209,9 @@ target_link_libraries(target5c837aefef0b4f6840fa3ee9ca6a0666  ${CONAN_LIBS})
 add_executable(targetd7ae865dc59ddb6de99ccbb3fbdfd728 001-learnCpp/10-多线程/131-阻塞队列.cpp)
 target_link_libraries(targetd7ae865dc59ddb6de99ccbb3fbdfd728  ${CONAN_LIBS})
 
+add_executable(targetf87c51ea7e7d85e5505175f9abff7202 001-learnCpp/10-多线程/330-automic_long.cpp)
+target_link_libraries(targetf87c51ea7e7d85e5505175f9abff7202  ${CONAN_LIBS})
+
 add_executable(target7dd1c75a9be2d398e73538c636149916 001-learnCpp/10-多线程/122-runnable.cpp)
 target_link_libraries(target7dd1c75a9be2d398e73538c636149916  ${CONAN_LIBS})
 
@@ -214,6 +241,9 @@ target_link_libraries(target9b503e022eb633b19d9eb3774f6f24c0  ${CONAN_LIBS})
 
 add_executable(target80e9c9bf79aa44356978c25e5b1df704 001-learnCpp/30-STL/040-map.cpp)
 target_link_libraries(target80e9c9bf79aa44356978c25e5b1df704  ${CONAN_LIBS})
+
+add_executable(target049ef3c1538088a97c9a30d6b6c2aab8 001-learnCpp/30-STL/042-list.cpp)
+target_link_libraries(target049ef3c1538088a97c9a30d6b6c2aab8  ${CONAN_LIBS})
 
 add_executable(targetc20545ad85e7788ad86deb803581982a 001-learnCpp/60-运算符重载/171-括号运算符.cpp)
 target_link_libraries(targetc20545ad85e7788ad86deb803581982a  ${CONAN_LIBS})
@@ -260,6 +290,9 @@ target_link_libraries(target5bae08c064c251b3fbdb8b412d18f066  ${CONAN_LIBS})
 add_executable(target42307d1a3d8b2a0a17a0faf4b89acd77 001-learnCpp/20-流/09-cpp格式化输出.cpp)
 target_link_libraries(target42307d1a3d8b2a0a17a0faf4b89acd77  ${CONAN_LIBS})
 
+add_executable(target4d995c644d5a382f6293af8502e07d73 001-learnCpp/20-流/305-size_t测试.cpp)
+target_link_libraries(target4d995c644d5a382f6293af8502e07d73  ${CONAN_LIBS})
+
 add_executable(target2a6f17916d0a0ec69cd28766caeb4977 016-学习boost/009-类型转换.cpp)
 target_link_libraries(target2a6f17916d0a0ec69cd28766caeb4977  ${CONAN_LIBS})
 
@@ -268,6 +301,9 @@ target_link_libraries(targetbd185e7b7675bba826e75312170c728b  ${CONAN_LIBS})
 
 add_executable(target7b21c7f4bb5d19f44868afaae2fc3a2a 016-学习boost/022-thread-local.cpp)
 target_link_libraries(target7b21c7f4bb5d19f44868afaae2fc3a2a  ${CONAN_LIBS})
+
+add_executable(target5041e933dc5aa56c9422cd00f6b60e00 016-学习boost/032-boost的log行号.cpp)
+target_link_libraries(target5041e933dc5aa56c9422cd00f6b60e00  ${CONAN_LIBS})
 
 add_executable(targetad5f99bdd019c87f2d088d12f25efa1f 016-学习boost/028-使用boost.json.cpp)
 target_link_libraries(targetad5f99bdd019c87f2d088d12f25efa1f  ${CONAN_LIBS})
@@ -278,6 +314,9 @@ target_link_libraries(targete5ea661bd56825877b09a7233783c662  ${CONAN_LIBS})
 add_executable(targeta1270319c5090bb457e6c7add3405a54 016-学习boost/015-使用括号函数定义多线程.cpp)
 target_link_libraries(targeta1270319c5090bb457e6c7add3405a54  ${CONAN_LIBS})
 
+add_executable(target2190f17cb3f6846a9ce3f01a4965a7e2 016-学习boost/046-lscpu.cpp)
+target_link_libraries(target2190f17cb3f6846a9ce3f01a4965a7e2  ${CONAN_LIBS})
+
 add_executable(target7fb1c456d986db6296067c7f0a3539d7 016-学习boost/002-文件大小.cpp)
 target_link_libraries(target7fb1c456d986db6296067c7f0a3539d7  ${CONAN_LIBS})
 
@@ -287,8 +326,14 @@ target_link_libraries(target33225efc23c8a01935bb9038b7a7de32  ${CONAN_LIBS})
 add_executable(target6db5bd3f475de77827ac82ff2f7af282 016-学习boost/001-列出文件夹下所有文件.cpp)
 target_link_libraries(target6db5bd3f475de77827ac82ff2f7af282  ${CONAN_LIBS})
 
+add_executable(target10e17145db490e3221a0800ec5740d19 016-学习boost/023-使用boost的assert.cpp)
+target_link_libraries(target10e17145db490e3221a0800ec5740d19  ${CONAN_LIBS})
+
 add_executable(target2fb867a800c3623fe2bc20691d0d26a8 016-学习boost/011-线程.cpp)
 target_link_libraries(target2fb867a800c3623fe2bc20691d0d26a8  ${CONAN_LIBS})
+
+add_executable(target75f54be9fc81f77cb4089711c635b8a2 016-学习boost/032-boost的log.cpp)
+target_link_libraries(target75f54be9fc81f77cb4089711c635b8a2  ${CONAN_LIBS})
 
 add_executable(target3bc7e87ea6e82ddbf3dc24e76dccdad9 016-学习boost/005-使用path.cpp)
 target_link_libraries(target3bc7e87ea6e82ddbf3dc24e76dccdad9  ${CONAN_LIBS})
@@ -296,8 +341,20 @@ target_link_libraries(target3bc7e87ea6e82ddbf3dc24e76dccdad9  ${CONAN_LIBS})
 add_executable(target24a398446b4630efc70302cfe1129a53 016-学习boost/004-listdir.cpp)
 target_link_libraries(target24a398446b4630efc70302cfe1129a53  ${CONAN_LIBS})
 
-add_executable(target7e45351ceefb7224df04f94a553b1694 033-json/1-json.cpp)
-target_link_libraries(target7e45351ceefb7224df04f94a553b1694  ${CONAN_LIBS})
+add_executable(targetb4f419a0901a383ebfb5aa2a99e46437 033-json/004-结构体.cpp)
+target_link_libraries(targetb4f419a0901a383ebfb5aa2a99e46437  ${CONAN_LIBS})
+
+add_executable(target90545f322f8f2cae86093e3574cb1e83 033-json/001-usejson.cpp)
+target_link_libraries(target90545f322f8f2cae86093e3574cb1e83  ${CONAN_LIBS})
+
+add_executable(target63832093131d16d9b27baed3094e17f4 033-json/002-usejson.cpp)
+target_link_libraries(target63832093131d16d9b27baed3094e17f4  ${CONAN_LIBS})
+
+add_executable(target3a4a01b94abc880da84487d3b6dca9c4 033-json/005-json和msgpack.cpp)
+target_link_libraries(target3a4a01b94abc880da84487d3b6dca9c4  ${CONAN_LIBS})
+
+add_executable(targetf5a1f958fe4df14224d9591938053057 033-json/003-usejson.cpp)
+target_link_libraries(targetf5a1f958fe4df14224d9591938053057  ${CONAN_LIBS})
 
 add_executable(target7f46cd340f028d7535b420d92c6a1a9b 030-http/sslServer.cpp)
 target_link_libraries(target7f46cd340f028d7535b420d92c6a1a9b  ${CONAN_LIBS})
@@ -308,5 +365,23 @@ target_link_libraries(target10ad65a98fddf872d8ef90c5d1c664b1  ${CONAN_LIBS})
 add_executable(targetf72e75529a61ba066d5bbfd1f10215c5 030-http/server.cpp)
 target_link_libraries(targetf72e75529a61ba066d5bbfd1f10215c5  ${CONAN_LIBS})
 
-add_executable(targetcc7319ee9c20cfb65c00fb81980f40b9 150-protobuf/01-protobuf和json.cpp)
-target_link_libraries(targetcc7319ee9c20cfb65c00fb81980f40b9  ${CONAN_LIBS})
+add_executable(target21a1e37975557ab00c5d5b25d9e332af 307-toml/01-one.cpp)
+target_link_libraries(target21a1e37975557ab00c5d5b25d9e332af  ${CONAN_LIBS})
+
+add_executable(target1781e5ebd88ab3d21c0000f827470e92 305-msgpack/034-msgpack打包map.cpp)
+target_link_libraries(target1781e5ebd88ab3d21c0000f827470e92  ${CONAN_LIBS})
+
+add_executable(targetb429bb975ce493df5258855c7e0677b5 305-msgpack/026-使用msgpack.cpp)
+target_link_libraries(targetb429bb975ce493df5258855c7e0677b5  ${CONAN_LIBS})
+
+add_executable(targetcfdae5b62eb72c379de9825b224682b7 305-msgpack/027-msgpackInC.cpp)
+target_link_libraries(targetcfdae5b62eb72c379de9825b224682b7  ${CONAN_LIBS})
+
+add_executable(target02e7cf62783297de4c5576896e308141 305-msgpack/102-msgpack自定义类型.cpp)
+target_link_libraries(target02e7cf62783297de4c5576896e308141  ${CONAN_LIBS})
+
+add_executable(target7e2ded2c9cea1b5b52dcc10db2e2945b 305-msgpack/108-msgpack自定义结构.cpp)
+target_link_libraries(target7e2ded2c9cea1b5b52dcc10db2e2945b  ${CONAN_LIBS})
+
+add_executable(targetbcc5b18172e0f17302c9fb8a569890a5 305-msgpack/104-msgpackDemo.cpp)
+target_link_libraries(targetbcc5b18172e0f17302c9fb8a569890a5  ${CONAN_LIBS})

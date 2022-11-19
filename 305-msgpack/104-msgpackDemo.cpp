@@ -5,8 +5,8 @@
 
 int main() {
     std::vector<std::string> _vecString;
-    _vecString.push_back("Hello");
-    _vecString.push_back("world");
+    _vecString.emplace_back("Hello");
+    _vecString.emplace_back("world");
 
     // pack
     msgpack::sbuffer _sbuffer;
@@ -14,14 +14,11 @@ int main() {
     std::cout << _sbuffer.data() << std::endl;
 
     // unpack
-    msgpack::unpacked msg;
-    msgpack::unpack(&msg, _sbuffer.data(), _sbuffer.size());
-    msgpack::object obj = msg.get();
-    std::cout << obj << std::endl;
+    auto obj = msgpack::unpack(_sbuffer.data(), _sbuffer.size());
+    std::cout << obj.get() << std::endl;
 
     // convert
-    std::vector<std::string> _vecRString;
-    obj.convert(&_vecRString);
+    std::vector<std::string> _vecRString = obj->convert();
 
     // print
     for (size_t i = 0; i < _vecRString.size(); ++i) {

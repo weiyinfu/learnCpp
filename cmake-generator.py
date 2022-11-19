@@ -2,13 +2,6 @@ import hashlib
 import os
 from os.path import *
 
-template = """
-cmake_minimum_required(VERSION 3.21)
-project(learnBoost)
-
-set(CMAKE_CXX_STANDARD 14)
-
-"""
 root = abspath(dirname(__file__))
 
 
@@ -36,8 +29,10 @@ add_folder(join(root, '001-learnCpp'))
 add_folder(join(root, '016-学习boost'))
 add_folder(join(root, '033-json'))
 add_folder(join(root, '030-http'))
-add_folder(join(root, '150-protobuf'))
-template += '\n'.join(a)
+add_folder(join(root, '307-toml'))
+add_folder(join(root, '305-msgpack'))
+# add_folder(join(root, '150-protobuf')) # protobuf依赖生成的文件
+template = '\n'.join(a)
 print(template)
 with open('./gen.cmake', 'w') as f:
     f.write(template)
