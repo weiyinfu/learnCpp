@@ -1,5 +1,6 @@
 #include<iostream>
 #include "gen/haha.pb.h"
+#include<nlohmann/json.hpp>
 
 using namespace std;
 
