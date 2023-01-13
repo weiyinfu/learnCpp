@@ -10,7 +10,8 @@ using namespace nlohmann;
 int main() {
     json x;
     x["name"] = "weiyinfu";
-    x["age"] = 18;
+    long long age = 1 << 34;
+    x["age"] = age;
     cout << x << endl;
     auto buffer = json::to_msgpack(x);//vector<uint8_t>
     auto res = json::from_msgpack(buffer);

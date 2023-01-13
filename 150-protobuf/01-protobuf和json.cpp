@@ -3,10 +3,12 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/text_format.h>
+#include <nlohmann/json.hpp>
 
 using namespace std;
 using namespace google::protobuf::util;
 
+nlohmann::json pb2json(const google::protobuf::Message &msg);
 
 google::protobuf::util::Status json2proto(const std::string &body, google::protobuf::Message &target) {
     JsonParseOptions options;
@@ -43,5 +45,10 @@ int main() {
     status = json2proto(s, uu);
     cout << status << endl;
     cout << uu.age() << endl;
+    cout << "===========" << endl;
+    cout << uu.SerializeAsString() << endl;
+    uu.set_address("beijing");
+    uu.set_id("123434");
+    cout << pb2json(uu) << endl;
     return 0;
 }
