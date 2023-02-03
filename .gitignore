@@ -24,3 +24,4 @@ CMakeCache.txt
 Makefile
 CMakeFiles
 *.cbp
+150-protobuf/gen*

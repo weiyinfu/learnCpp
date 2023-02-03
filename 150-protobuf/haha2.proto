@@ -4,5 +4,5 @@ message User{
   string DisplayName = 2;
   int32 Age = 3;
   string Address = 4;
-   int32 BirthYear = 5;
+  int32 BirthYear = 5;
 }

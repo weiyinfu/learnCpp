@@ -3,12 +3,9 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/text_format.h>
-#include <nlohmann/json.hpp>
 
 using namespace std;
 using namespace google::protobuf::util;
-
-nlohmann::json pb2json(const google::protobuf::Message &msg);
 
 google::protobuf::util::Status json2proto(const std::string &body, google::protobuf::Message &target) {
     JsonParseOptions options;
@@ -34,12 +31,14 @@ int main() {
     User u;
     u.set_displayname("weiyinfu");
     u.set_age(13);
+    auto extra = u.mutable_extra();
+    (*extra)["职业"] = "programmar";
     auto s = proto2json(u);
-    cout << s << endl;
+    cout << "Proto官方：" << s << endl;
     User uu;
     auto status = json2proto(s, uu);
     cout << status << endl;
-    cout << proto2json(uu) << endl;
+    cout << "Proto官方第二次：" << proto2json(uu) << endl;
     cout << "this is debug string" << uu.Utf8DebugString() << endl;
     s = "{\"Id\":\"\",\"DisplayName\":\"weiyinfu\",\"Age\":\"144443\",\"Address\":\"\",\"BirthYear\":0}";
     status = json2proto(s, uu);
@@ -47,8 +46,5 @@ int main() {
     cout << uu.age() << endl;
     cout << "===========" << endl;
     cout << uu.SerializeAsString() << endl;
-    uu.set_address("beijing");
-    uu.set_id("123434");
-    cout << pb2json(uu) << endl;
     return 0;
 }
