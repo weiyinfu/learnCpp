@@ -245,6 +245,9 @@ target_link_libraries(target80e9c9bf79aa44356978c25e5b1df704  ${CONAN_LIBS})
 add_executable(target049ef3c1538088a97c9a30d6b6c2aab8 001-learnCpp/30-STL/042-list.cpp)
 target_link_libraries(target049ef3c1538088a97c9a30d6b6c2aab8  ${CONAN_LIBS})
 
+add_executable(targetebb6e6a4443f786364d80aa5d44ca744 001-learnCpp/30-STL/195-distance.cpp)
+target_link_libraries(targetebb6e6a4443f786364d80aa5d44ca744  ${CONAN_LIBS})
+
 add_executable(targetc20545ad85e7788ad86deb803581982a 001-learnCpp/60-运算符重载/171-括号运算符.cpp)
 target_link_libraries(targetc20545ad85e7788ad86deb803581982a  ${CONAN_LIBS})
 
@@ -346,6 +349,9 @@ target_link_libraries(targetb4f419a0901a383ebfb5aa2a99e46437  ${CONAN_LIBS})
 
 add_executable(target90545f322f8f2cae86093e3574cb1e83 033-json/001-usejson.cpp)
 target_link_libraries(target90545f322f8f2cae86093e3574cb1e83  ${CONAN_LIBS})
+
+add_executable(target8782f7895a06f65d9b86d5de3943a736 033-json/007-usejson.cpp)
+target_link_libraries(target8782f7895a06f65d9b86d5de3943a736  ${CONAN_LIBS})
 
 add_executable(target63832093131d16d9b27baed3094e17f4 033-json/002-usejson.cpp)
 target_link_libraries(target63832093131d16d9b27baed3094e17f4  ${CONAN_LIBS})

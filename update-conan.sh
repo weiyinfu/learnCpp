@@ -1,3 +1,3 @@
 cd build
-conan install ..
+conan install .. --build=missing
 cd ..

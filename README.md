@@ -35,3 +35,29 @@ https://github.com/weiyinfu/learnCtypes
 * numcpp
 * opencv
 * pybind11
+
+# 注意
+本项目使用conan1.x构建，使用2.x构建会报错。  
+pip install conan==1.59.0
+
+
+conan install .. --build=boost --build=msgpack --build=poco
+
+conan install openssl/1.1.1a@ --build missing
+
+
+thrift/0.15.0
+protobuf/3.13.0
+msgpack/3.3.0
+
+conan profile detect 如果家目录下没有~/.conan2执行这个命令。  
+
+# conan2.0文档
+https://docs.conan.io/2/installation.html
+
+# 常用命令
+```
+在learnCpp目录下：conan install . --output-folder=build --build=missing
+在build目录下：cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake  --build .
+```

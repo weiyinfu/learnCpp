@@ -5,9 +5,12 @@ using namespace std;
 using json = nlohmann::json;
 
 int main() {
+    const char *s = nullptr;
+    //此处空指针直接崩掉
     json a = {{"one", 1},
-              {"two", 2}};
-    cout << a << endl;
+              {"two", 2},
+              "three", s};
+    cout << a.dump() << endl;
     //如何制定json的类型
     json json_array(json::array());
     json json_map(json::object());

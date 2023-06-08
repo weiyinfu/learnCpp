@@ -10,9 +10,11 @@
 using namespace std;
 
 typedef struct haha *hahaHandle;
-class haha{
-    int x=3;
+
+class haha {
+    int x = 3;
 };
+
 int main() {
     cout << "hello world" << endl;
     vector<int> *vec = new vector<int>();
@@ -20,7 +22,7 @@ int main() {
     cout << sizeof(size_t) << endl;
     haha h;
 
-    unsigned  long long x=-1;
-    printf("%llu",x);
+    unsigned long long xx = -1;
+    printf("%llu", xx);
     return 0;
 }

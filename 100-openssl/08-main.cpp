@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cmath>
 #include<map>
+#include <openssl/err.h>
 
 using namespace std;
 const char *Hex = "0123456789ABCDEF";
@@ -225,11 +226,24 @@ void test_base64() {
     cout << base64decodeString(ans) << endl;
 }
 
+void handleOpenSSLErrors(void) {
+    ERR_print_errors_fp(stderr);
+    abort();
+}
+
+void test_decrypt() {
+    string a = "gasdf";
+    string key = "asdfdfas";
+    auto ans = AesDecryptString(key, a);
+    cout << ans << endl;
+}
+
 int main() {
 //    test_string();
 //    test_hex();
 //    test_base64();
-    test_encrypt();
+//    test_encrypt();
+    test_decrypt();
 //    test_encrypt_many();
     return 0;
 }
